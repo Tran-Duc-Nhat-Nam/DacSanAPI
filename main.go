@@ -44,9 +44,8 @@ type MuaDacSan struct {
 }
 
 type NguyenLieu struct {
-	ID   int    `json:"id"`
-	Ten  string `json:"ten"`
-	MoTa string `json:"mo_ta"`
+	ID  int    `json:"id"`
+	Ten string `json:"ten"`
 }
 
 type HinhAnh struct {
@@ -57,9 +56,9 @@ type HinhAnh struct {
 }
 
 type ThanhPhan struct {
-	IdNguyenLieu int     `json:"id_nguyen_lieu"`
-	SoLuong      float64 `json:"so_luong"`
-	DonViTinh    string  `json:"don_vi_tinh"`
+	NguyenLieu NguyenLieu `json:"nguyen_lieu"`
+	SoLuong    float64    `json:"so_luong"`
+	DonViTinh  string     `json:"don_vi_tinh"`
 }
 
 type DacSan struct {
@@ -180,7 +179,7 @@ func docDiaChiTheoIdCSDL(id int) (DiaChi, error) {
 
 func themDiaChiCSDL(diaChi DiaChi) error {
 	var count int
-	db.QueryRow("SELECT COUNT(*) FROM dia_chi").Scan(&count)
+	db.QueryRow("SELECT MAX(id) FROM dia_chi").Scan(&count)
 	_, err := db.Exec("INSERT INTO dia_chi VALUES (?, ?, ?, ?, ?, ?)", count, diaChi.SoNha, diaChi.TenDuong, diaChi.PhuongXa, diaChi.QuanHuyen, diaChi.TinhThanh.ID)
 	return err
 }
@@ -265,7 +264,7 @@ func docVungMienDacSanCSDL(id int) ([]VungMien, error) {
 
 func themVungMienCSDL(vungMien VungMien) error {
 	var count int
-	db.QueryRow("SELECT COUNT(*) FROM vung_mien").Scan(&count)
+	db.QueryRow("SELECT MAX(id) FROM vung_mien").Scan(&count)
 	_, err := db.Exec("INSERT INTO vung_mien VALUES (?, ?)", count, vungMien.Ten)
 	return err
 }
@@ -350,7 +349,7 @@ func docMuaDacSanCSDL(id int) ([]MuaDacSan, error) {
 
 func themMuaCSDL(muaDacSan MuaDacSan) error {
 	var count int
-	db.QueryRow("SELECT COUNT(*) FROM vung_mien").Scan(&count)
+	db.QueryRow("SELECT MAX(id) FROM vung_mien").Scan(&count)
 	_, err := db.Exec("INSERT INTO mua_dac_san VALUES (?, ?)", count, muaDacSan.Ten)
 	return err
 }
@@ -392,11 +391,7 @@ func docNguyenLieuCSDL() ([]NguyenLieu, error) {
 func docNguyenLieuTheoIdCSDL(id int) (NguyenLieu, error) {
 	var nguyenLieu NguyenLieu
 
-	rows, err := db.Query("SELECT * FROM nguyen_lieu WHERE id = " + strconv.Itoa(id))
-	if err != nil {
-		return nguyenLieu, err
-	}
-	defer rows.Close()
+	rows := db.QueryRow("SELECT * FROM nguyen_lieu WHERE id = " + strconv.Itoa(id))
 
 	if err := rows.Scan(&nguyenLieu.ID, &nguyenLieu.Ten); err != nil {
 		return nguyenLieu, err
@@ -435,7 +430,7 @@ func docNguyenLieuThanhPhanCSDL(id int) ([]NguyenLieu, error) {
 
 func themNguyenLieuCSDL(nguyenLieu NguyenLieu) error {
 	var count int
-	db.QueryRow("SELECT COUNT(*) FROM vung_mien").Scan(&count)
+	db.QueryRow("SELECT MAX(id) FROM vung_mien").Scan(&count)
 	_, err := db.Exec("INSERT INTO nguyen_lieu VALUES (?, ?)", count, nguyenLieu.Ten)
 	return err
 }
@@ -461,8 +456,14 @@ func docThanhPhanTheoIdCSDL(id int) ([]ThanhPhan, error) {
 
 	for rows.Next() {
 		var thanhPhan ThanhPhan
-		if err := rows.Scan(nil, &thanhPhan.IdNguyenLieu, &thanhPhan.SoLuong, &thanhPhan.DonViTinh); err != nil {
+		var temp int
+		var idNguyenLieu int
+		if err := rows.Scan(&temp, &idNguyenLieu, &thanhPhan.SoLuong, &thanhPhan.DonViTinh); err != nil {
 			return nil, err
+		}
+		nguyenLieu, err := docNguyenLieuTheoIdCSDL(idNguyenLieu)
+		if err == nil {
+			thanhPhan.NguyenLieu = nguyenLieu
 		}
 		dsThanhPhan = append(dsThanhPhan, thanhPhan)
 	}
@@ -476,13 +477,13 @@ func docThanhPhanTheoIdCSDL(id int) ([]ThanhPhan, error) {
 
 func themThanhPhanCSDL(idDacSan int, thanhPhan ThanhPhan) error {
 	var count int
-	db.QueryRow("SELECT COUNT(*) FROM thanh_phan").Scan(&count)
-	_, err := db.Exec("INSERT INTO thanh_phan VALUES (?, ?, ?, ?)", idDacSan, thanhPhan.IdNguyenLieu, thanhPhan.SoLuong, thanhPhan.DonViTinh)
+	db.QueryRow("SELECT MAX(id) FROM thanh_phan").Scan(&count)
+	_, err := db.Exec("INSERT INTO thanh_phan VALUES (?, ?, ?, ?)", idDacSan, thanhPhan.NguyenLieu.ID, thanhPhan.SoLuong, thanhPhan.DonViTinh)
 	return err
 }
 
 func capNhatThanhPhanCSDL(idDacSan int, thanhPhan ThanhPhan) error {
-	_, err := db.Exec("UPDATE thanh_phan SET so_luong = ?, don_vi_tinh = ? WHERE id_dac_san = ? AND id_nguyen_lieu = ?", thanhPhan.SoLuong, thanhPhan.DonViTinh, idDacSan, thanhPhan.IdNguyenLieu)
+	_, err := db.Exec("UPDATE thanh_phan SET so_luong = ?, don_vi_tinh = ? WHERE id_dac_san = ? AND id_nguyen_lieu = ?", thanhPhan.SoLuong, thanhPhan.DonViTinh, idDacSan, thanhPhan.NguyenLieu.ID)
 	return err
 }
 
@@ -494,13 +495,9 @@ func xoaThanhPhanCSDL(idDacSan int, idNguyenLieu int) error {
 func docHinhAnhTheoIdCSDL(id int) (HinhAnh, error) {
 	var hinhAhh HinhAnh
 
-	rows, err := db.Query("SELECT * FROM hinh_anh WHERE id = " + strconv.Itoa(id))
-	if err != nil {
-		return hinhAhh, err
-	}
-	defer rows.Close()
+	row := db.QueryRow("SELECT * FROM hinh_anh WHERE id = " + strconv.Itoa(id))
 
-	if err := rows.Scan(&hinhAhh.ID, &hinhAhh.Ten, &hinhAhh.MoTa, &hinhAhh.URL); err != nil {
+	if err := row.Scan(&hinhAhh.ID, &hinhAhh.Ten, &hinhAhh.MoTa, &hinhAhh.URL); err != nil {
 		return hinhAhh, err
 	}
 
@@ -537,7 +534,7 @@ func docHinhAnhDacSanCSDL(id int) ([]HinhAnh, error) {
 
 func themHinhAnhCSDL(hinhAnh HinhAnh) error {
 	var count int
-	db.QueryRow("SELECT COUNT(*) FROM hinh_anh").Scan(&count)
+	db.QueryRow("SELECT MAX(id) FROM hinh_anh").Scan(&count)
 	_, err := db.Exec("INSERT INTO hinh_anh VALUES (?, ?, ?, ?)", count, hinhAnh.Ten, hinhAnh.MoTa, hinhAnh.URL)
 	return err
 }
@@ -597,9 +594,42 @@ func docDacSanCSDL() ([]DacSan, error) {
 	return dsDacSan, nil
 }
 
+func docDacSanTheoIdCSDL(id int) (DacSan, error) {
+	var dacSan DacSan
+
+	row := db.QueryRow("SELECT * FROM dac_san WHERE id = " + strconv.Itoa(id))
+
+	var idHinhDaiDien int
+	if err := row.Scan(&dacSan.ID, &dacSan.Ten, &dacSan.MoTa, &dacSan.CachCheBien, &dacSan.LuotXem, &dacSan.DiemDanhGia, &dacSan.LuotDanhGia, &idHinhDaiDien); err != nil {
+		return dacSan, err
+	}
+	thanhPhan, err := docThanhPhanTheoIdCSDL(dacSan.ID)
+	if err == nil {
+		dacSan.ThanhPhan = thanhPhan
+	}
+	vungMien, err := docVungMienDacSanCSDL(dacSan.ID)
+	if err == nil {
+		dacSan.VungMien = vungMien
+	}
+	muaDacSan, err := docMuaDacSanCSDL(dacSan.ID)
+	if err == nil {
+		dacSan.MuaDacSan = muaDacSan
+	}
+	hinhAnh, err := docHinhAnhDacSanCSDL(dacSan.ID)
+	if err == nil {
+		dacSan.HinhAnh = hinhAnh
+	}
+	hinhDaiDien, err := docHinhAnhTheoIdCSDL(idHinhDaiDien)
+	if err == nil {
+		dacSan.HinhDaiDien = hinhDaiDien
+	}
+
+	return dacSan, nil
+}
+
 func themDacSanCSDL(dacSan DacSan) error {
 	var count int
-	db.QueryRow("SELECT COUNT(*) FROM dac_san").Scan(&count)
+	db.QueryRow("SELECT MAX(id) FROM dac_san").Scan(&count)
 	_, err := db.Exec("INSERT INTO noi_ban VALUES (?, ?, ?, ?, ?, ?)", count, dacSan.Ten, dacSan.MoTa, dacSan.CachCheBien, dacSan.LuotXem, dacSan.DiemDanhGia, dacSan.LuotDanhGia, dacSan.HinhDaiDien.ID)
 	if err != nil {
 		return err
@@ -623,7 +653,7 @@ func themDacSanCSDL(dacSan DacSan) error {
 		}
 	}
 	for _, thanhPhan := range dacSan.ThanhPhan {
-		_, err = db.Exec("INSERT INTO thanh_phan VALUES (?, ?, ?, ?)", count, thanhPhan.IdNguyenLieu, thanhPhan.SoLuong, thanhPhan.DonViTinh)
+		_, err = db.Exec("INSERT INTO thanh_phan VALUES (?, ?, ?, ?)", count, thanhPhan.NguyenLieu.ID, thanhPhan.SoLuong, thanhPhan.DonViTinh)
 		if err != nil {
 			return err
 		}
@@ -659,7 +689,7 @@ func capNhatDacSanCSDL(dacSan DacSan) error {
 	}
 	_, err = db.Exec("DELETE FROM thanh_phan WHERE id_dac_san = ?)", dacSan.ID)
 	for _, thanhPhan := range dacSan.ThanhPhan {
-		_, err = db.Exec("INSERT INTO thanh_phan VALUES (?, ?, ?, ?)", dacSan.ID, thanhPhan.IdNguyenLieu, thanhPhan.SoLuong, thanhPhan.DonViTinh)
+		_, err = db.Exec("INSERT INTO thanh_phan VALUES (?, ?, ?, ?)", dacSan.ID, thanhPhan.NguyenLieu.ID, thanhPhan.SoLuong, thanhPhan.DonViTinh)
 		if err != nil {
 			return err
 		}
@@ -703,7 +733,7 @@ func docNoiBanCSDL() ([]NoiBan, error) {
 
 func themNoiBanCSDL(noiBan NoiBan) error {
 	var count int
-	db.QueryRow("SELECT COUNT(*) FROM noi_ban").Scan(&count)
+	db.QueryRow("SELECT MAX(id) FROM noi_ban").Scan(&count)
 	_, err := db.Exec("INSERT INTO noi_ban VALUES (?, ?, ?, ?, ?, ?)", count, noiBan.Ten, noiBan.MoTa, noiBan.DiaChi.ID, noiBan.LuotXem, noiBan.DiemDanhGia, noiBan.LuotDanhGia)
 	return err
 }
@@ -972,6 +1002,18 @@ func docDacSanJson(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, dsDacSan)
 }
 
+func docDacSanTheoIdJson(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	nguoiDung, err := docDacSanTheoIdCSDL(id)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	c.IndentedJSON(http.StatusOK, nguoiDung)
+}
+
 func docNoiBanJson(c *gin.Context) {
 	dsNoiBan, _ := docNoiBanCSDL()
 	c.IndentedJSON(http.StatusOK, dsNoiBan)
@@ -1030,7 +1072,8 @@ func main() {
 		AllowNativePasswords: true,
 	}
 
-	db, err := sql.Open("mysql", cfg.FormatDSN())
+	var err error
+	db, err = sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -1044,6 +1087,7 @@ func main() {
 
 	router := gin.Default()
 	router.GET("/dacsan", docDacSanJson)
+	router.GET("/dacsan/:id", docDacSanTheoIdJson)
 	router.GET("/noiban", docNoiBanJson)
 	router.GET("/tinhthanh", docTinhThanhJson)
 	router.GET("/vungmien", docVungMienJson)
