@@ -1,0 +1,41 @@
+package models
+
+import (
+	"strconv"
+	"time"
+)
+
+type LuotXemDacSan struct {
+	IdNguoiDung int       `json:"id_nguoi_dung"`
+	IdDacSan    int       `json:"id_dac_san"`
+	ThoiGianXem time.Time `json:"thoi_gian"`
+}
+
+func DocLichSuXemDacSanCSDL(idNguoiDung int) ([]LuotXemDacSan, error) {
+	var lichSuXem []LuotXemDacSan
+
+	rows, err := db.Query("SELECT * FROM lich_su_xem_dac_san WHERE id_nguoi_dung = " + strconv.Itoa(idNguoiDung))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var luotXem LuotXemDacSan
+		if err := rows.Scan(&luotXem.IdNguoiDung, &luotXem.IdDacSan, &luotXem.ThoiGianXem); err != nil {
+			return nil, err
+		}
+		lichSuXem = append(lichSuXem, luotXem)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return lichSuXem, nil
+}
+
+func ThemLuotXemDacSanCSDL(luotXem LuotXemDacSan) error {
+	_, err := db.Exec("INSERT INTO luot_xem_dac_san VALUES (?, ?, ?, ?)", luotXem.IdNguoiDung, luotXem.IdDacSan, time.Now())
+	return err
+}
