@@ -1,22 +1,15 @@
 package main
 
 import (
-	"context"
-	"database/sql"
 	"nam/dac_san_api/internal/models"
-	"net"
-	"os"
 
 	// "encoding/json"
 	"strconv"
 
 	"fmt"
-	"log"
 	"net/http"
 
-	"cloud.google.com/go/cloudsqlconn"
 	"github.com/gin-gonic/gin"
-	"github.com/go-sql-driver/mysql"
 )
 
 func DocTinhThanhJson(c *gin.Context) {
@@ -76,6 +69,30 @@ func XoaTinhThanhJson(c *gin.Context) {
 	} else {
 		c.IndentedJSON(http.StatusOK, true)
 	}
+}
+
+func DocQuanHuyenTheoTinhThanhJson(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	quanHuyen, err := models.DocQuanHuyenTheoTinhThanhCSDL(id)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	c.IndentedJSON(http.StatusOK, quanHuyen)
+}
+
+func DocPhuongXaTheoQuanHuyenJson(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	phuongXa, err := models.DocPhuongXaTheoQuanHuyenCSDL(id)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	c.IndentedJSON(http.StatusOK, phuongXa)
 }
 
 func DocDiaChiTheoIdJson(c *gin.Context) {
@@ -280,16 +297,79 @@ func DocDacSanTheoIdJson(c *gin.Context) {
 	if err != nil {
 		fmt.Print(err.Error())
 	}
-	nguoiDung, err := models.DocDacSanTheoIdCSDL(id)
+	dacSan, err := models.DocDacSanTheoIdCSDL(id)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
-	c.IndentedJSON(http.StatusOK, nguoiDung)
+	c.IndentedJSON(http.StatusOK, dacSan)
+}
+
+func ThemDacSanJson(c *gin.Context) {
+	var dacSan models.DacSan
+
+	if err := c.BindJSON(&dacSan); err != nil {
+		fmt.Print(err.Error())
+		return
+	}
+
+	dacSan, err := models.ThemDacSanCSDL(dacSan)
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, dacSan)
+	} else {
+		c.IndentedJSON(http.StatusCreated, dacSan)
+	}
+}
+
+func CapNhatDacSanJson(c *gin.Context) {
+	var dacSan models.DacSan
+
+	if err := c.BindJSON(&dacSan); err != nil {
+		fmt.Print(err.Error())
+		return
+	}
+
+	err := models.CapNhatDacSanCSDL(dacSan)
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, false)
+	} else {
+		c.IndentedJSON(http.StatusOK, true)
+	}
+}
+
+func XoaDacSanJson(c *gin.Context) {
+	var Doc map[string]int
+
+	if err := c.BindJSON(&Doc); err != nil {
+		fmt.Print(err.Error())
+		return
+	}
+
+	err := models.XoaDacSanCSDL(Doc["id"])
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, false)
+	} else {
+		c.IndentedJSON(http.StatusOK, true)
+	}
 }
 
 func DocNoiBanJson(c *gin.Context) {
 	dsNoiBan, _ := models.DocNoiBanCSDL()
 	c.IndentedJSON(http.StatusOK, dsNoiBan)
+}
+
+func DocNoiBanTheoIdJson(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	dacSan, err := models.DocNoiBanTheoIdCSDL(id)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	c.IndentedJSON(http.StatusOK, dacSan)
 }
 
 func ThemNoiBanJson(c *gin.Context) {
@@ -343,89 +423,162 @@ func XoaNoiBanJson(c *gin.Context) {
 	}
 }
 
-func DocNguoiDungTheoIdJson(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		fmt.Print(err.Error())
-	}
-	nguoiDung, err := models.DocNguoiDungCSDL(id)
+func DocNguoiDungJson(c *gin.Context) {
+	nguoiDung, err := models.DocNguoiDungCSDL()
 	if err != nil {
 		fmt.Print(err.Error())
 	}
 	c.IndentedJSON(http.StatusOK, nguoiDung)
 }
 
-func connectWithConnector() (*sql.DB, error) {
-	mustGetenv := func(k string) string {
-		v := os.Getenv(k)
-		if v == "" {
-			log.Fatalf("Fatal Error in connect_connector.go: %s environment variable not set.", k)
-		}
-		return v
-	}
-	// Note: Saving credentials in environment variables is convenient, but not
-	// secure - consider a more secure solution such as
-	// Cloud Secret Manager (https://cloud.google.com/secret-manager) to help
-	// keep passwords and other secrets safe.
-	var (
-		dbUser                 = mustGetenv("root")                                          // e.g. 'my-db-user'
-		dbPwd                  = mustGetenv("nhatnam2002")                                   // e.g. 'my-db-password'
-		dbName                 = mustGetenv("mysql")                                         // e.g. 'my-database'
-		instanceConnectionName = mustGetenv("eternal-insight-410902:asia-east1:dac-san-api") // e.g. 'project:region:instance'
-		usePrivate             = os.Getenv("")
-	)
-
-	d, err := cloudsqlconn.NewDialer(context.Background())
+func DocNguoiDungTheoIdJson(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return nil, fmt.Errorf("cloudsqlconn.NewDialer: %w", err)
+		fmt.Print(err.Error())
 	}
-	var opts []cloudsqlconn.DialOption
-	if usePrivate != "" {
-		opts = append(opts, cloudsqlconn.WithPrivateIP())
-	}
-	mysql.RegisterDialContext("cloudsqlconn",
-		func(ctx context.Context, addr string) (net.Conn, error) {
-			return d.Dial(ctx, instanceConnectionName, opts...)
-		})
-
-	dbURI := fmt.Sprintf("%s:%s@cloudsqlconn(localhost:3306)/%s?parseTime=true",
-		dbUser, dbPwd, dbName)
-
-	dbPool, err := sql.Open("mysql", dbURI)
+	nguoiDung, err := models.DocNguoiDungTheoIdCSDL(id)
 	if err != nil {
-		return nil, fmt.Errorf("sql.Open: %w", err)
+		fmt.Print(err.Error())
 	}
-	return dbPool, nil
+	c.IndentedJSON(http.StatusOK, nguoiDung)
 }
+
+func ThemNguoiDungJson(c *gin.Context) {
+	var nguoiDung models.NguoiDung
+
+	if err := c.BindJSON(&nguoiDung); err != nil {
+		fmt.Print(err.Error())
+		return
+	}
+
+	nguoiDung, err := models.ThemNguoiDungCSDL(nguoiDung)
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, nguoiDung)
+	} else {
+		c.IndentedJSON(http.StatusCreated, nguoiDung)
+	}
+}
+
+func CapNhatNguoiDungJson(c *gin.Context) {
+	var nguoiDung models.NguoiDung
+
+	if err := c.BindJSON(&nguoiDung); err != nil {
+		fmt.Print(err.Error())
+		return
+	}
+
+	err := models.CapNhatNguoiDungCSDL(nguoiDung)
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, false)
+	} else {
+		c.IndentedJSON(http.StatusOK, true)
+	}
+}
+
+func XoaNguoiDungJson(c *gin.Context) {
+	var Doc map[string]int
+
+	if err := c.BindJSON(&Doc); err != nil {
+		fmt.Print(err.Error())
+		return
+	}
+
+	err := models.XoaNguoiDungCSDL(Doc["id"])
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, false)
+	} else {
+		c.IndentedJSON(http.StatusOK, true)
+	}
+}
+
+// func ThemDiaChiWebJson() {
+// 	file, err := os.ReadFile("provinces.open-api.vn.json")
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		return
+// 	}
+// 	var items []map[string]interface{}
+// 	err = json.Unmarshal(file, &items)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		return
+// 	}
+// 	for _, province := range items {
+// 		districts := province["districts"].([]interface{})
+// 		for _, district := range districts {
+// 			districtInfo := district.(map[string]interface{})
+// 			var quanHuyen models.QuanHuyen
+// 			quanHuyen.ID = int(districtInfo["code"].(float64))
+// 			quanHuyen.Ten = districtInfo["name"].(string)
+// 			quanHuyen.TinhThanh.ID = int(province["code"].(float64))
+// 			quanHuyen, err := models.ThemQuanHuyenCSDL(quanHuyen)
+// 			if err != nil {
+// 				fmt.Println("err")
+// 			} else {
+// 				fmt.Println(quanHuyen.Ten)
+// 			}
+// 			wards := districtInfo["wards"].([]interface{})
+// 			for _, ward := range wards {
+// 				wardInfo := ward.(map[string]interface{})
+// 				var phuongXa models.PhuongXa
+// 				phuongXa.ID = int(wardInfo["code"].(float64))
+// 				phuongXa.Ten = wardInfo["name"].(string)
+// 				phuongXa.QuanHuyen.ID = int(districtInfo["code"].(float64))
+// 				phuongXa, err := models.ThemPhuongXaCSDL(phuongXa)
+// 				if err != nil {
+// 					fmt.Println("err")
+// 				} else {
+// 					fmt.Println(phuongXa.Ten)
+// 				}
+// 			}
+// 		}
+// 	}
+// 	fmt.Println("Done")
+// }
 
 func main() {
 	models.ConnectDatabase()
 
+	// ThemDiaChiWebJson()
+
 	router := gin.Default()
 	router.GET("/dacsan", DocDacSanJson)
 	router.GET("/dacsan/:id", DocDacSanTheoIdJson)
+	router.POST("/dacsan", ThemDacSanJson)
+	router.PUT("/dacsan", CapNhatDacSanJson)
+	router.DELETE("/dacsan", XoaDacSanJson)
 	router.GET("/noiban", DocNoiBanJson)
-	router.POST("/noiban/them", ThemNoiBanJson)
-	router.POST("/noiban/capnhat", CapNhatNoiBanJson)
-	router.POST("/noiban/xoa", XoaNoiBanJson)
+	router.GET("/noiban/:id", DocNoiBanTheoIdJson)
+	router.POST("/noiban", ThemNoiBanJson)
+	router.PUT("/noiban", CapNhatNoiBanJson)
+	router.DELETE("/noiban", XoaNoiBanJson)
 	router.GET("/tinhthanh", DocTinhThanhJson)
-	router.POST("/tinhthanh/them", ThemTinhThanhJson)
-	router.POST("/tinhthanh/capnhat", CapNhatTinhThanhJson)
-	router.POST("/tinhthanh/xoa", XoaTinhThanhJson)
+	router.GET("/tinhthanh/:id/quanhuyen", DocQuanHuyenTheoTinhThanhJson)
+	router.GET("/quanhuyen/:id/phuongxa", DocPhuongXaTheoQuanHuyenJson)
+	router.POST("/tinhthanh", ThemTinhThanhJson)
+	router.PUT("/tinhthanh", CapNhatTinhThanhJson)
+	router.DELETE("/tinhthanh", XoaTinhThanhJson)
 	router.GET("/vungmien", DocVungMienJson)
-	router.POST("/vungmien/them", ThemVungMienJson)
-	router.POST("/vungmien/capnhat", CapNhatVungMienJson)
-	router.POST("/vungmien/xoa", XoaVungMienJson)
+	router.POST("/vungmien", ThemVungMienJson)
+	router.PUT("/vungmien", CapNhatVungMienJson)
+	router.DELETE("/vungmien", XoaVungMienJson)
 	router.GET("/muadacsan", DocMuaDacSanJson)
-	router.POST("/muadacsan/them", ThemMuaDacSanJson)
-	router.POST("/muadacsan/capnhat", CapNhatMuaDacSanJson)
-	router.POST("/muadacsan/xoa", XoaMuaDacSanJson)
+	router.POST("/muadacsan", ThemMuaDacSanJson)
+	router.PUT("/muadacsan", CapNhatMuaDacSanJson)
+	router.DELETE("/muadacsan", XoaMuaDacSanJson)
 	router.GET("/nguyenlieu", DocNguyenLieuJson)
-	router.POST("/nguyenlieu/them", ThemNguyenLieuJson)
-	router.POST("/nguyenlieu/capnhat", CapNhatNguyenLieuJson)
-	router.POST("/nguyenlieu/xoa", XoaNguyenLieuJson)
+	router.POST("/nguyenlieu", ThemNguyenLieuJson)
+	router.PUT("/nguyenlieu", CapNhatNguyenLieuJson)
+	router.DELETE("/nguyenlieu", XoaNguyenLieuJson)
 	router.GET("/diachi/:id", DocDiaChiTheoIdJson)
 	router.GET("/hinhanh/:id", DocHinhAnhTheoIdJson)
+	router.GET("/nguoidung", DocNguoiDungJson)
 	router.GET("/nguoidung/:id", DocNguoiDungTheoIdJson)
+	router.POST("/nguoidung", ThemNguoiDungJson)
+	router.PUT("/nguoidung", CapNhatNguoiDungJson)
+	router.DELETE("/nguoidung", XoaNguoiDungJson)
 	router.Run("localhost:8080")
 }

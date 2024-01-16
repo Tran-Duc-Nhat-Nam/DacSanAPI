@@ -8,7 +8,7 @@ type NguyenLieu struct {
 }
 
 func DocNguyenLieuCSDL() ([]NguyenLieu, error) {
-	var dsNguyenLieu []NguyenLieu
+	dsNguyenLieu := []NguyenLieu{}
 
 	rows, err := db.Query("SELECT * FROM nguyen_lieu ORDER BY id ASC")
 	if err != nil {
@@ -44,7 +44,7 @@ func DocNguyenLieuTheoIdCSDL(id int) (NguyenLieu, error) {
 }
 
 func DocNguyenLieuThanhPhanCSDL(id int) ([]NguyenLieu, error) {
-	var dsNguyenLieu []NguyenLieu
+	dsNguyenLieu := []NguyenLieu{}
 
 	rows, err := db.Query("SELECT * FROM thanh_phan WHERE id_dac_san = " + strconv.Itoa(id))
 	if err != nil {

@@ -22,7 +22,7 @@ func DocHinhAnhTheoIdCSDL(id int) (HinhAnh, error) {
 }
 
 func DocHinhAnhDacSanCSDL(id int) ([]HinhAnh, error) {
-	var dsHinhAnh []HinhAnh
+	dsHinhAnh := []HinhAnh{}
 
 	rows, err := db.Query("SELECT * FROM hinh_anh_dac_san WHERE id_dac_san = " + strconv.Itoa(id))
 	if err != nil {

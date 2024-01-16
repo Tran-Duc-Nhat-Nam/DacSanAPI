@@ -3,22 +3,23 @@ package models
 import "strconv"
 
 type DacSan struct {
-	ID          int         `json:"id"`
-	Ten         string      `json:"ten"`
-	MoTa        string      `json:"mo_ta"`
-	CachCheBien string      `json:"cach_che_bien"`
-	ThanhPhan   []ThanhPhan `json:"thanh_phan"`
-	VungMien    []VungMien  `json:"vung_mien"`
-	MuaDacSan   []MuaDacSan `json:"mua_dac_san"`
-	LuotXem     int         `json:"luot_xem"`
-	DiemDanhGia float64     `json:"diem_danh_gia"`
-	LuotDanhGia int         `json:"luot_danh_gia"`
-	HinhDaiDien HinhAnh     `json:"hinh_dai_dien"`
-	HinhAnh     []HinhAnh   `json:"hinh_anh"`
+	ID           int            `json:"id"`
+	Ten          string         `json:"ten"`
+	MoTa         string         `json:"mo_ta"`
+	CachCheBien  string         `json:"cach_che_bien"`
+	ThanhPhan    []ThanhPhan    `json:"thanh_phan"`
+	VungMien     []VungMien     `json:"vung_mien"`
+	MuaDacSan    []MuaDacSan    `json:"mua_dac_san"`
+	NoiBanDacSan []NoiBanDacSan `json:"noi_ban"`
+	LuotXem      int            `json:"luot_xem"`
+	DiemDanhGia  float64        `json:"diem_danh_gia"`
+	LuotDanhGia  int            `json:"luot_danh_gia"`
+	HinhDaiDien  HinhAnh        `json:"hinh_dai_dien"`
+	HinhAnh      []HinhAnh      `json:"hinh_anh"`
 }
 
 func DocDacSanCSDL() ([]DacSan, error) {
-	var dsDacSan []DacSan
+	dsDacSan := []DacSan{}
 
 	rows, err := db.Query("SELECT * FROM dac_san ORDER BY id ASC")
 	if err != nil {
@@ -95,38 +96,44 @@ func DocDacSanTheoIdCSDL(id int) (DacSan, error) {
 	return dacSan, nil
 }
 
-func ThemDacSanCSDL(dacSan DacSan) error {
-	var count int
-	db.QueryRow("SELECT MAX(id) FROM dac_san").Scan(&count)
-	_, err := db.Exec("INSERT INTO noi_ban VALUES (?, ?, ?, ?, ?, ?)", count, dacSan.Ten, dacSan.MoTa, dacSan.CachCheBien, dacSan.LuotXem, dacSan.DiemDanhGia, dacSan.LuotDanhGia, dacSan.HinhDaiDien.ID)
+func ThemDacSanCSDL(dacSan DacSan) (DacSan, error) {
+	id := TaoIdMoi("dac_san")
+	dacSan.ID = id
+	_, err := db.Exec("INSERT INTO noi_ban VALUES (?, ?, ?, ?, ?, ?)", id, dacSan.Ten, dacSan.MoTa, dacSan.CachCheBien, dacSan.LuotXem, dacSan.DiemDanhGia, dacSan.LuotDanhGia, dacSan.HinhDaiDien.ID)
 	if err != nil {
-		return err
+		return dacSan, err
 	}
 	for _, vungMien := range dacSan.VungMien {
-		_, err = db.Exec("INSERT INTO dac_san_thuoc_vung VALUES (?, ?)", count, vungMien.ID)
+		_, err = db.Exec("INSERT INTO dac_san_thuoc_vung VALUES (?, ?)", id, vungMien.ID)
 		if err != nil {
-			return err
+			return dacSan, err
 		}
 	}
 	for _, muaDacSan := range dacSan.MuaDacSan {
-		_, err = db.Exec("INSERT INTO dac_san_theo_mua VALUES (?, ?)", count, muaDacSan.ID)
+		_, err = db.Exec("INSERT INTO dac_san_theo_mua VALUES (?, ?)", id, muaDacSan.ID)
 		if err != nil {
-			return err
+			return dacSan, err
 		}
 	}
 	for _, hinhAnh := range dacSan.HinhAnh {
-		_, err = db.Exec("INSERT INTO hinh_anh_dac_san VALUES (?, ?)", hinhAnh.ID, count)
+		_, err = db.Exec("INSERT INTO hinh_anh_dac_san VALUES (?, ?)", hinhAnh.ID, id)
 		if err != nil {
-			return err
+			return dacSan, err
 		}
 	}
 	for _, thanhPhan := range dacSan.ThanhPhan {
-		_, err = db.Exec("INSERT INTO thanh_phan VALUES (?, ?, ?, ?)", count, thanhPhan.NguyenLieu.ID, thanhPhan.SoLuong, thanhPhan.DonViTinh)
+		_, err = db.Exec("INSERT INTO thanh_phan VALUES (?, ?, ?, ?)", id, thanhPhan.NguyenLieu.ID, thanhPhan.SoLuong, thanhPhan.DonViTinh)
 		if err != nil {
-			return err
+			return dacSan, err
 		}
 	}
-	return nil
+	for _, noiBanDacSan := range dacSan.NoiBanDacSan {
+		_, err = db.Exec("INSERT INTO thanh_phan VALUES (?, ?, ?, ?)", noiBanDacSan.IdNoiBan, dacSan.ID, noiBanDacSan.GiaBan, noiBanDacSan.DonViTinh)
+		if err != nil {
+			return dacSan, err
+		}
+	}
+	return dacSan, nil
 }
 
 func CapNhatDacSanCSDL(dacSan DacSan) error {
@@ -162,10 +169,37 @@ func CapNhatDacSanCSDL(dacSan DacSan) error {
 			return err
 		}
 	}
+	_, err = db.Exec("DELETE FROM noi_ban_dac_san WHERE id_dac_san = ?)", dacSan.ID)
+	for _, noiBanDacSan := range dacSan.NoiBanDacSan {
+		_, err = db.Exec("INSERT INTO thanh_phan VALUES (?, ?, ?, ?)", noiBanDacSan.IdNoiBan, dacSan.ID, noiBanDacSan.GiaBan, noiBanDacSan.DonViTinh)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func XoaDacSanCSDL(id int) error {
-	_, err := db.Exec("DELETE FROM dac_san WHERE id = ?", id)
+	_, err := db.Exec("DELETE FROM dac_san_thuoc_vung WHERE id_dac_san = ?)", id)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec("DELETE FROM dac_san_theo_mua WHERE id_dac_san = ?)", id)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec("DELETE FROM hinh_anh_dac_san WHERE id_dac_san = ?)", id)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec("DELETE FROM thanh_phan WHERE id_dac_san = ?)", id)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec("DELETE FROM noi_ban_dac_san WHERE id_dac_san = ?)", id)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec("DELETE FROM dac_san WHERE id = ?", id)
 	return err
 }

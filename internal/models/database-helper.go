@@ -32,3 +32,12 @@ func ConnectDatabase() {
 		log.Fatal(pingErr)
 	}
 }
+
+func TaoIdMoi(tenBang string) int {
+	var count int
+	err := db.QueryRow("SELECT MAX(id) FROM " + tenBang).Scan(&count)
+	if err != nil {
+		return 1
+	}
+	return count + 1
+}

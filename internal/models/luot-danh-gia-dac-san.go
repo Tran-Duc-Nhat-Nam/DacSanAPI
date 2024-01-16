@@ -13,7 +13,7 @@ type LuotDanhGiaDacSan struct {
 }
 
 func DocLichSuDanhGiaDacSanCSDL(idNguoiDung int) ([]LuotDanhGiaDacSan, error) {
-	var lichSuDanhGia []LuotDanhGiaDacSan
+	lichSuDanhGia := []LuotDanhGiaDacSan{}
 
 	rows, err := db.Query("SELECT * FROM danh_gia_dac_san WHERE id_nguoi_dung = " + strconv.Itoa(idNguoiDung))
 	if err != nil {
@@ -37,7 +37,7 @@ func DocLichSuDanhGiaDacSanCSDL(idNguoiDung int) ([]LuotDanhGiaDacSan, error) {
 }
 
 func DocDanhGiaDacSanCSDL(idDacSan int) ([]LuotDanhGiaDacSan, error) {
-	var lichSuDanhGia []LuotDanhGiaDacSan
+	lichSuDanhGia := []LuotDanhGiaDacSan{}
 
 	rows, err := db.Query("SELECT * FROM danh_gia_dac_san WHERE id_dac_san = " + strconv.Itoa(idDacSan))
 	if err != nil {

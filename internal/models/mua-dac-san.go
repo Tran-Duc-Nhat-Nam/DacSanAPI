@@ -9,7 +9,7 @@ type MuaDacSan struct {
 }
 
 func DocMuaCSDL() ([]MuaDacSan, error) {
-	var dsMuaDacSan []MuaDacSan
+	dsMuaDacSan := []MuaDacSan{}
 
 	rows, err := db.Query("SELECT * FROM mua_dac_san ORDER BY id ASC")
 	if err != nil {

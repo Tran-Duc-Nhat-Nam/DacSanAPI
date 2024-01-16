@@ -12,7 +12,7 @@ type LuotXemNoiBan struct {
 }
 
 func DocLichSuXemNoiBanCSDL(idNguoiDung int) ([]LuotXemNoiBan, error) {
-	var lichSuXem []LuotXemNoiBan
+	lichSuXem := []LuotXemNoiBan{}
 
 	rows, err := db.Query("SELECT * FROM lich_su_xem_noi_ban WHERE id_nguoi_dung = " + strconv.Itoa(idNguoiDung))
 	if err != nil {

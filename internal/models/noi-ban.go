@@ -1,5 +1,7 @@
 package models
 
+import "database/sql"
+
 type NoiBan struct {
 	ID          int     `json:"id"`
 	Ten         string  `json:"ten"`
@@ -11,7 +13,7 @@ type NoiBan struct {
 }
 
 func DocNoiBanCSDL() ([]NoiBan, error) {
-	var dsNoiBan []NoiBan
+	dsNoiBan := []NoiBan{}
 	var diaChiId int
 
 	rows, err := db.Query("SELECT * FROM noi_ban ORDER BY id ASC")
@@ -39,19 +41,29 @@ func DocNoiBanCSDL() ([]NoiBan, error) {
 	return dsNoiBan, nil
 }
 
-func ThemNoiBanCSDL(noiBan NoiBan) (NoiBan, error) {
-	var count int
-	db.QueryRow("SELECT MAX(id) FROM dia_chi").Scan(&count)
-	count++
-	result, err := db.Exec("INSERT INTO dia_chi VALUES (?, ?, ?, ?, ?, ?)", count, noiBan.DiaChi.SoNha, noiBan.DiaChi.TenDuong, noiBan.DiaChi.PhuongXa, noiBan.DiaChi.QuanHuyen, noiBan.DiaChi.TinhThanh.ID)
-	idDiaChi, err := result.LastInsertId()
-	if err != nil {
+func DocNoiBanTheoIdCSDL(id int) (NoiBan, error) {
+	var noiBan NoiBan
+	var idDiaChi int
+
+	row := db.QueryRow("SELECT * FROM noi_ban WHERE id = ?", id)
+	if err := row.Scan(&noiBan.ID, &noiBan.Ten, &noiBan.MoTa, &idDiaChi, &noiBan.LuotXem, &noiBan.DiemDanhGia, &noiBan.LuotDanhGia); err != nil {
+		if err == sql.ErrNoRows {
+			return noiBan, err
+		}
 		return noiBan, err
 	}
-	db.QueryRow("SELECT MAX(id) FROM noi_ban").Scan(&count)
-	count++
-	_, err = db.Exec("INSERT INTO noi_ban VALUES (?, ?, ?, ?, ?, ?)", count, noiBan.Ten, noiBan.MoTa, idDiaChi, noiBan.LuotXem, noiBan.DiemDanhGia, noiBan.LuotDanhGia)
-	noiBan.ID = count
+	diaChi, err := DocDiaChiTheoIdCSDL(idDiaChi)
+	if err == nil {
+		noiBan.DiaChi = diaChi
+	}
+	return noiBan, nil
+}
+
+func ThemNoiBanCSDL(noiBan NoiBan) (NoiBan, error) {
+	idDiaChi := TaoIdMoi("dia_chi")
+	_, err := db.Exec("INSERT INTO dia_chi VALUES (?, ?, ?, ?)", TaoIdMoi("dia_chi"), noiBan.DiaChi.SoNha, noiBan.DiaChi.TenDuong, noiBan.DiaChi.PhuongXa.ID)
+	noiBan.ID = TaoIdMoi("noi_ban")
+	_, err = db.Exec("INSERT INTO noi_ban VALUES (?, ?, ?, ?, ?, ?, ?)", noiBan.ID, noiBan.Ten, noiBan.MoTa, idDiaChi, noiBan.LuotXem, noiBan.DiemDanhGia, noiBan.LuotDanhGia)
 	return noiBan, err
 }
 

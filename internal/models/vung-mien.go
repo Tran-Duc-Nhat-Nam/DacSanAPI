@@ -8,7 +8,7 @@ type VungMien struct {
 }
 
 func DocVungMienCSDL() ([]VungMien, error) {
-	var dsVungMien []VungMien
+	dsVungMien := []VungMien{}
 
 	rows, err := db.Query("SELECT * FROM vung_mien ORDER BY id ASC")
 	if err != nil {

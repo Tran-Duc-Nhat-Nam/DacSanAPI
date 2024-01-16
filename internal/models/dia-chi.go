@@ -6,41 +6,49 @@ import (
 )
 
 type DiaChi struct {
-	ID        int       `json:"id"`
-	SoNha     string    `json:"so_nha"`
-	TenDuong  string    `json:"ten_duong"`
-	PhuongXa  string    `json:"phuong_xa"`
-	QuanHuyen string    `json:"quan_huyen"`
-	TinhThanh TinhThanh `json:"tinh_thanh"`
+	ID       int      `json:"id"`
+	SoNha    string   `json:"so_nha"`
+	TenDuong string   `json:"ten_duong"`
+	PhuongXa PhuongXa `json:"phuong_xa"`
 }
 
 func DocDiaChiTheoIdCSDL(id int) (DiaChi, error) {
 	var diaChi DiaChi
-	var tinhThanhId int
-
+	var idPhuongXa int
 	row := db.QueryRow("SELECT * FROM dia_chi WHERE id = ?", strconv.Itoa(id))
-	if err := row.Scan(&diaChi.ID, &diaChi.SoNha, &diaChi.TenDuong, &diaChi.PhuongXa, &diaChi.QuanHuyen, &tinhThanhId); err != nil {
+	if err := row.Scan(&diaChi.ID, &diaChi.SoNha, &diaChi.TenDuong, &idPhuongXa); err != nil {
 		if err == sql.ErrNoRows {
 			return diaChi, err
 		}
 		return diaChi, err
 	}
-	tinhThanh, err := DocTinhThanhTheoIdCSDL(tinhThanhId)
+	phuongXa, err := DocPhuongXaTheoIdCSDL(idPhuongXa)
 	if err == nil {
-		diaChi.TinhThanh = tinhThanh
+		diaChi.PhuongXa = phuongXa
 	}
 	return diaChi, nil
 }
 
-func ThemDiaChiCSDL(diaChi DiaChi) error {
-	var count int
-	db.QueryRow("SELECT MAX(id) FROM dia_chi").Scan(&count)
-	_, err := db.Exec("INSERT INTO dia_chi VALUES (?, ?, ?, ?, ?, ?)", count, diaChi.SoNha, diaChi.TenDuong, diaChi.PhuongXa, diaChi.QuanHuyen, diaChi.TinhThanh.ID)
-	return err
+func TimDiaChiCSDL(diaChi DiaChi) (DiaChi, error) {
+	row := db.QueryRow("SELECT id FROM dia_chi WHERE so_nha = ?, ten_duong = ?, phuong_xa = ?", diaChi.SoNha, diaChi.TenDuong, diaChi.PhuongXa.ID)
+	if err := row.Scan(&diaChi.ID); err != nil {
+		if err == sql.ErrNoRows {
+			return diaChi, err
+		}
+		return diaChi, err
+	}
+	return diaChi, nil
+}
+
+func ThemDiaChiCSDL(diaChi DiaChi) (DiaChi, error) {
+	id := TaoIdMoi("dia_chi")
+	diaChi.ID = id
+	_, err := db.Exec("INSERT INTO dia_chi VALUES (?, ?, ?, ?)", id, diaChi.SoNha, diaChi.TenDuong, diaChi.PhuongXa.ID)
+	return diaChi, err
 }
 
 func CapNhatDiaChiCSDL(diaChi DiaChi) error {
-	_, err := db.Exec("UPDATE dia_chi SET sp_nha = ?, ten_duong = ?, phuong_xa = ?, quan_huyen = ?, tinh_thanh = ? WHERE id = ?", diaChi.SoNha, diaChi.TenDuong, diaChi.PhuongXa, diaChi.QuanHuyen, diaChi.TinhThanh.ID, diaChi.ID)
+	_, err := db.Exec("UPDATE dia_chi SET so_nha = ?, ten_duong = ?, phuong_xa = ? WHERE id = ?", diaChi.SoNha, diaChi.TenDuong, diaChi.PhuongXa.ID)
 	return err
 }
 

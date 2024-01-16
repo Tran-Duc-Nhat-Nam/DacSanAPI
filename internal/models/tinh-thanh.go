@@ -11,7 +11,7 @@ type TinhThanh struct {
 }
 
 func DocTinhThanhCSDL() ([]TinhThanh, error) {
-	var dsTinhThanh []TinhThanh
+	dsTinhThanh := []TinhThanh{}
 
 	rows, err := db.Query("SELECT * FROM tinh_thanh ORDER BY id ASC")
 	if err != nil {

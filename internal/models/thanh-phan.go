@@ -9,7 +9,7 @@ type ThanhPhan struct {
 }
 
 func DocThanhPhanTheoIdCSDL(id int) ([]ThanhPhan, error) {
-	var dsThanhPhan []ThanhPhan
+	dsThanhPhan := []ThanhPhan{}
 
 	rows, err := db.Query("SELECT * FROM thanh_phan WHERE id_dac_san = " + strconv.Itoa(id))
 	if err != nil {
@@ -39,8 +39,6 @@ func DocThanhPhanTheoIdCSDL(id int) ([]ThanhPhan, error) {
 }
 
 func ThemThanhPhanCSDL(idDacSan int, thanhPhan ThanhPhan) error {
-	var count int
-	db.QueryRow("SELECT MAX(id) FROM thanh_phan").Scan(&count)
 	_, err := db.Exec("INSERT INTO thanh_phan VALUES (?, ?, ?, ?)", idDacSan, thanhPhan.NguyenLieu.ID, thanhPhan.SoLuong, thanhPhan.DonViTinh)
 	return err
 }
@@ -51,6 +49,6 @@ func CapNhatThanhPhanCSDL(idDacSan int, thanhPhan ThanhPhan) error {
 }
 
 func XoaThanhPhanCSDL(idDacSan int, idNguyenLieu int) error {
-	_, err := db.Exec("DELETE FROM nguyen_lieu WHERE id_dac_san = ? AND id_nguyen_lieu = ?", idDacSan, idNguyenLieu)
+	_, err := db.Exec("DELETE FROM thanh_phan WHERE id_dac_san = ? AND id_nguyen_lieu = ?", idDacSan, idNguyenLieu)
 	return err
 }
