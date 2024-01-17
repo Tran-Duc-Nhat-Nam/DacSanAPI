@@ -580,5 +580,5 @@ func main() {
 	router.POST("/nguoidung", ThemNguoiDungJson)
 	router.PUT("/nguoidung", CapNhatNguoiDungJson)
 	router.DELETE("/nguoidung", XoaNguoiDungJson)
-	router.Run("localhost:8080")
+	router.Run()
 }
