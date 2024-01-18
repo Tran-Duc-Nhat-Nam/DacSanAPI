@@ -1,6 +1,9 @@
 package models
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
 type DacSan struct {
 	ID           int            `json:"id"`
@@ -36,22 +39,32 @@ func DocDacSanCSDL() ([]DacSan, error) {
 		thanhPhan, err := DocThanhPhanTheoIdCSDL(dacSan.ID)
 		if err == nil {
 			dacSan.ThanhPhan = thanhPhan
+		} else {
+			fmt.Println(err)
 		}
 		vungMien, err := DocVungMienDacSanCSDL(dacSan.ID)
 		if err == nil {
 			dacSan.VungMien = vungMien
+		} else {
+			fmt.Println(err)
 		}
 		muaDacSan, err := DocMuaDacSanCSDL(dacSan.ID)
 		if err == nil {
 			dacSan.MuaDacSan = muaDacSan
+		} else {
+			fmt.Println(err)
 		}
 		hinhAnh, err := DocHinhAnhDacSanCSDL(dacSan.ID)
 		if err == nil {
 			dacSan.HinhAnh = hinhAnh
+		} else {
+			fmt.Println(err)
 		}
 		hinhDaiDien, err := DocHinhAnhTheoIdCSDL(idHinhDaiDien)
 		if err == nil {
 			dacSan.HinhDaiDien = hinhDaiDien
+		} else {
+			fmt.Println(err)
 		}
 		dsDacSan = append(dsDacSan, dacSan)
 	}
@@ -75,31 +88,62 @@ func DocDacSanTheoIdCSDL(id int) (DacSan, error) {
 	thanhPhan, err := DocThanhPhanTheoIdCSDL(dacSan.ID)
 	if err == nil {
 		dacSan.ThanhPhan = thanhPhan
+	} else {
+		fmt.Println(err)
 	}
 	vungMien, err := DocVungMienDacSanCSDL(dacSan.ID)
 	if err == nil {
 		dacSan.VungMien = vungMien
+	} else {
+		fmt.Println(err)
 	}
 	muaDacSan, err := DocMuaDacSanCSDL(dacSan.ID)
 	if err == nil {
 		dacSan.MuaDacSan = muaDacSan
+	} else {
+		fmt.Println(err)
 	}
 	hinhAnh, err := DocHinhAnhDacSanCSDL(dacSan.ID)
 	if err == nil {
 		dacSan.HinhAnh = hinhAnh
+	} else {
+		fmt.Println(err)
 	}
 	hinhDaiDien, err := DocHinhAnhTheoIdCSDL(idHinhDaiDien)
 	if err == nil {
 		dacSan.HinhDaiDien = hinhDaiDien
+	} else {
+		fmt.Println(err)
 	}
 
 	return dacSan, nil
 }
 
 func ThemDacSanCSDL(dacSan DacSan) (DacSan, error) {
+	for _, hinhAnh := range dacSan.HinhAnh {
+		var count int
+		_ = db.QueryRow("SELECT COUNT(*) FROM hinh_anh WHERE ten = ?", hinhAnh.Ten).Scan(&count)
+		if count == 0 {
+			_, err := db.Exec("INSERT INTO hinh_anh VALUES (?, ?, ?, ?)", TaoIdMoi("hinh_anh"), hinhAnh.Ten, hinhAnh.MoTa, hinhAnh.URL)
+			if err != nil {
+				return dacSan, err
+			}
+		}
+	}
+	var count int
+	_ = db.QueryRow("SELECT COUNT(*) FROM hinh_anh WHERE ten = ?", dacSan.HinhDaiDien.Ten).Scan(&count)
+	if count == 0 {
+		dacSan.HinhDaiDien.ID = TaoIdMoi("hinh_anh")
+		_, err := db.Exec("INSERT INTO hinh_anh VALUES (?, ?, ?, ?)", dacSan.HinhDaiDien.ID, dacSan.HinhDaiDien.Ten, dacSan.HinhDaiDien.MoTa, dacSan.HinhDaiDien.URL)
+		if err != nil {
+			return dacSan, err
+		}
+	} else {
+		_ = db.QueryRow("SELECT id FROM hinh_anh WHERE ten = ?", dacSan.HinhDaiDien.Ten).Scan(&dacSan.HinhDaiDien.ID)
+	}
 	id := TaoIdMoi("dac_san")
 	dacSan.ID = id
-	_, err := db.Exec("INSERT INTO noi_ban VALUES (?, ?, ?, ?, ?, ?)", id, dacSan.Ten, dacSan.MoTa, dacSan.CachCheBien, dacSan.LuotXem, dacSan.DiemDanhGia, dacSan.LuotDanhGia, dacSan.HinhDaiDien.ID)
+	_, err := db.Exec("INSERT INTO dac_san VALUES (?, ?, ?, ?, ?, ?, ?, ?)", id, dacSan.Ten, dacSan.MoTa, dacSan.CachCheBien, dacSan.LuotXem, dacSan.DiemDanhGia, dacSan.LuotDanhGia, dacSan.HinhDaiDien.ID)
 	if err != nil {
 		return dacSan, err
 	}
@@ -137,7 +181,7 @@ func ThemDacSanCSDL(dacSan DacSan) (DacSan, error) {
 }
 
 func CapNhatDacSanCSDL(dacSan DacSan) error {
-	_, err := db.Exec("UPDATE dac_san SET ten = ?, mota = ?, dia_chi = ?, luot_xem = ?, diem_danh_gia = ?, luot_danh_gia = ? WHERE id = ?", dacSan.Ten, dacSan.MoTa, dacSan.CachCheBien, dacSan.LuotXem, dacSan.DiemDanhGia, dacSan.LuotDanhGia, dacSan.ID)
+	_, err := db.Exec("UPDATE dac_san SET ten = ?, mo_ta = ?, cach_che_bien = ?, luot_xem = ?, diem_danh_gia = ?, luot_danh_gia = ? WHERE id = ?", dacSan.Ten, dacSan.MoTa, dacSan.CachCheBien, dacSan.LuotXem, dacSan.DiemDanhGia, dacSan.LuotDanhGia, dacSan.ID)
 	if err != nil {
 		return err
 	}
@@ -180,23 +224,23 @@ func CapNhatDacSanCSDL(dacSan DacSan) error {
 }
 
 func XoaDacSanCSDL(id int) error {
-	_, err := db.Exec("DELETE FROM dac_san_thuoc_vung WHERE id_dac_san = ?)", id)
+	_, err := db.Exec("DELETE FROM dac_san_thuoc_vung WHERE id_dac_san = ?", id)
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("DELETE FROM dac_san_theo_mua WHERE id_dac_san = ?)", id)
+	_, err = db.Exec("DELETE FROM dac_san_theo_mua WHERE id_dac_san = ?", id)
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("DELETE FROM hinh_anh_dac_san WHERE id_dac_san = ?)", id)
+	_, err = db.Exec("DELETE FROM hinh_anh_dac_san WHERE id_dac_san = ?", id)
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("DELETE FROM thanh_phan WHERE id_dac_san = ?)", id)
+	_, err = db.Exec("DELETE FROM thanh_phan WHERE id_dac_san = ?", id)
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("DELETE FROM noi_ban_dac_san WHERE id_dac_san = ?)", id)
+	_, err = db.Exec("DELETE FROM noi_ban_dac_san WHERE id_dac_san = ?", id)
 	if err != nil {
 		return err
 	}

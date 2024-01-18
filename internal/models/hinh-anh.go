@@ -57,7 +57,7 @@ func ThemHinhAnhCSDL(hinhAnh HinhAnh) error {
 }
 
 func CapNhatHinhAnhCSDL(hinhAnh HinhAnh) error {
-	_, err := db.Exec("UPDATE hinh_anh SET ten = ?, mota = ?, url = ? WHERE id = ?", hinhAnh.Ten, hinhAnh.MoTa, hinhAnh.URL, hinhAnh.ID)
+	_, err := db.Exec("UPDATE hinh_anh SET ten = ?, mo_ta = ?, url = ? WHERE id = ?", hinhAnh.Ten, hinhAnh.MoTa, hinhAnh.URL, hinhAnh.ID)
 	return err
 }
 

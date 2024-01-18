@@ -34,13 +34,9 @@ func DocVungMienCSDL() ([]VungMien, error) {
 func DocVungMienTheoIdCSDL(id int) (VungMien, error) {
 	var vungMien VungMien
 
-	rows, err := db.Query("SELECT * FROM vung_mien WHERE id = " + strconv.Itoa(id))
-	if err != nil {
-		return vungMien, err
-	}
-	defer rows.Close()
+	row := db.QueryRow("SELECT * FROM vung_mien WHERE id = ?", id)
 
-	if err := rows.Scan(&vungMien.ID, &vungMien.Ten); err != nil {
+	if err := row.Scan(&vungMien.ID, &vungMien.Ten); err != nil {
 		return vungMien, err
 	}
 
@@ -48,9 +44,9 @@ func DocVungMienTheoIdCSDL(id int) (VungMien, error) {
 }
 
 func DocVungMienDacSanCSDL(id int) ([]VungMien, error) {
-	var dsVungMien []VungMien
+	dsVungMien := []VungMien{}
 
-	rows, err := db.Query("SELECT * FROM dac_san_thuoc_vung WHERE id_dac_san = " + strconv.Itoa(id) + " ORDER BY id ASC")
+	rows, err := db.Query("SELECT * FROM dac_san_thuoc_vung WHERE id_dac_san = " + strconv.Itoa(id) + " ORDER BY id_dac_san ASC")
 	if err != nil {
 		return dsVungMien, err
 	}
@@ -58,8 +54,8 @@ func DocVungMienDacSanCSDL(id int) ([]VungMien, error) {
 
 	for rows.Next() {
 		var idVungMien int
-		if err := rows.Scan(nil, &idVungMien); err != nil {
-			return nil, err
+		if err := rows.Scan(&id, &idVungMien); err != nil {
+			return dsVungMien, err
 		}
 		vungMien, err := DocVungMienTheoIdCSDL(idVungMien)
 		if err != nil {

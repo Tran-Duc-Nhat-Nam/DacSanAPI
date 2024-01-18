@@ -46,7 +46,7 @@ func DocNguyenLieuTheoIdCSDL(id int) (NguyenLieu, error) {
 func DocNguyenLieuThanhPhanCSDL(id int) ([]NguyenLieu, error) {
 	dsNguyenLieu := []NguyenLieu{}
 
-	rows, err := db.Query("SELECT * FROM thanh_phan WHERE id_dac_san = " + strconv.Itoa(id))
+	rows, err := db.Query("SELECT * FROM thanh_phan WHERE id_dac_san = ?", id)
 	if err != nil {
 		return dsNguyenLieu, err
 	}
@@ -54,8 +54,8 @@ func DocNguyenLieuThanhPhanCSDL(id int) ([]NguyenLieu, error) {
 
 	for rows.Next() {
 		var idNguyenLieu int
-		if err := rows.Scan(nil, &idNguyenLieu); err != nil {
-			return nil, err
+		if err := rows.Scan(&id, &idNguyenLieu); err != nil {
+			return dsNguyenLieu, err
 		}
 		nguyenLieu, err := DocNguyenLieuTheoIdCSDL(idNguyenLieu)
 		if err != nil {

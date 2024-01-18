@@ -7,6 +7,8 @@ require cloud.google.com/go/cloudsqlconn v1.5.2
 require (
 	cloud.google.com/go/compute v1.23.3 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
+	github.com/aws/aws-lambda-go v1.44.0
+	github.com/awslabs/aws-lambda-go-api-proxy v0.16.0
 	github.com/bytedance/sonic v1.10.2 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.1 // indirect

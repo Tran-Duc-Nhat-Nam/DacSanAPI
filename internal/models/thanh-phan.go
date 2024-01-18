@@ -1,7 +1,5 @@
 package models
 
-import "strconv"
-
 type ThanhPhan struct {
 	NguyenLieu NguyenLieu `json:"nguyen_lieu"`
 	SoLuong    float64    `json:"so_luong"`
@@ -11,7 +9,7 @@ type ThanhPhan struct {
 func DocThanhPhanTheoIdCSDL(id int) ([]ThanhPhan, error) {
 	dsThanhPhan := []ThanhPhan{}
 
-	rows, err := db.Query("SELECT * FROM thanh_phan WHERE id_dac_san = " + strconv.Itoa(id))
+	rows, err := db.Query("SELECT * FROM thanh_phan WHERE id_dac_san = ?", id)
 	if err != nil {
 		return dsThanhPhan, err
 	}
@@ -22,7 +20,7 @@ func DocThanhPhanTheoIdCSDL(id int) ([]ThanhPhan, error) {
 		var temp int
 		var idNguyenLieu int
 		if err := rows.Scan(&temp, &idNguyenLieu, &thanhPhan.SoLuong, &thanhPhan.DonViTinh); err != nil {
-			return nil, err
+			return dsThanhPhan, err
 		}
 		nguyenLieu, err := DocNguyenLieuTheoIdCSDL(idNguyenLieu)
 		if err == nil {

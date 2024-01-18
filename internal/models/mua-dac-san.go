@@ -1,7 +1,5 @@
 package models
 
-import "strconv"
-
 type MuaDacSan struct {
 	ID    int    `json:"id"`
 	Ten   string `json:"ten"`
@@ -35,13 +33,9 @@ func DocMuaCSDL() ([]MuaDacSan, error) {
 func DocMuaTheoIdCSDL(id int) (MuaDacSan, error) {
 	var mua MuaDacSan
 
-	rows, err := db.Query("SELECT * FROM mua_dac_san WHERE id = " + strconv.Itoa(id))
-	if err != nil {
-		return mua, err
-	}
-	defer rows.Close()
+	row := db.QueryRow("SELECT * FROM mua_dac_san WHERE id = ?", id)
 
-	if err := rows.Scan(&mua.ID, &mua.Ten); err != nil {
+	if err := row.Scan(&mua.ID, &mua.Ten); err != nil {
 		return mua, err
 	}
 
@@ -49,9 +43,9 @@ func DocMuaTheoIdCSDL(id int) (MuaDacSan, error) {
 }
 
 func DocMuaDacSanCSDL(id int) ([]MuaDacSan, error) {
-	var dsMuaDacSan []MuaDacSan
+	dsMuaDacSan := []MuaDacSan{}
 
-	rows, err := db.Query("SELECT * FROM dac_san_theo_mua WHERE id_dac_san = " + strconv.Itoa(id))
+	rows, err := db.Query("SELECT * FROM dac_san_theo_mua WHERE id_dac_san = ?", id)
 	if err != nil {
 		return dsMuaDacSan, err
 	}
@@ -59,8 +53,8 @@ func DocMuaDacSanCSDL(id int) ([]MuaDacSan, error) {
 
 	for rows.Next() {
 		var idMuaDacSan int
-		if err := rows.Scan(nil, &idMuaDacSan); err != nil {
-			return nil, err
+		if err := rows.Scan(&id, &idMuaDacSan); err != nil {
+			return dsMuaDacSan, err
 		}
 		muaDacSan, err := DocMuaTheoIdCSDL(idMuaDacSan)
 		if err != nil {
