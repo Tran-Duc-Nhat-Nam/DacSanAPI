@@ -119,6 +119,33 @@ func DocDacSanTheoIdCSDL(id int) (DacSan, error) {
 	return dacSan, nil
 }
 
+func DocDacSanTheoNoiBanCSDL(id int) ([]DacSan, error) {
+	dsDacSan := []DacSan{}
+
+	rows, err := db.Query("SELECT * FROM noi_ban_dac_san where id_noi_ban = ? ORDER BY id_dac_san ASC", id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var idDacSan int
+		if err := rows.Scan(&id, &idDacSan); err != nil {
+			return nil, err
+		}
+		dacSan, err := DocDacSanTheoIdCSDL(idDacSan)
+		if err == nil {
+			dsDacSan = append(dsDacSan, dacSan)
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return dsDacSan, nil
+}
+
 func ThemDacSanCSDL(dacSan DacSan) (DacSan, error) {
 	for _, hinhAnh := range dacSan.HinhAnh {
 		var count int

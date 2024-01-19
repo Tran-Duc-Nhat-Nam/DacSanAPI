@@ -23,7 +23,7 @@ type NguoiDung struct {
 func DocNguoiDungCSDL() ([]NguoiDung, error) {
 	dsNguoiDung := []NguoiDung{}
 
-	row, err := db.Query("SELECT * FROM nguoi_dung ORDEY BY id ASC")
+	row, err := db.Query("SELECT * FROM nguoi_dung ORDER BY id ASC")
 	if err != nil {
 		return dsNguoiDung, err
 	}

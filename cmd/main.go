@@ -304,6 +304,18 @@ func DocDacSanTheoIdJson(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, dacSan)
 }
 
+func DocDacSanTheoNoiBanJson(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	dacSan, err := models.DocDacSanTheoNoiBanCSDL(id)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	c.IndentedJSON(http.StatusOK, dacSan)
+}
+
 func ThemDacSanJson(c *gin.Context) {
 	var dacSan models.DacSan
 
@@ -552,6 +564,7 @@ func main() {
 	router.DELETE("/dacsan", XoaDacSanJson)
 	router.GET("/noiban", DocNoiBanJson)
 	router.GET("/noiban/:id", DocNoiBanTheoIdJson)
+	router.GET("/noiban/:id/dacsan", DocDacSanTheoNoiBanJson)
 	router.POST("/noiban", ThemNoiBanJson)
 	router.PUT("/noiban", CapNhatNoiBanJson)
 	router.DELETE("/noiban", XoaNoiBanJson)
