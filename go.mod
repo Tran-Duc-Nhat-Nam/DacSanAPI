@@ -4,6 +4,8 @@ go 1.21.5
 
 require cloud.google.com/go/cloudsqlconn v1.5.2
 
+require github.com/gin-contrib/cors v1.5.0 // indirect
+
 require (
 	cloud.google.com/go/compute v1.23.3 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect

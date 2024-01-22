@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -556,7 +557,13 @@ func main() {
 
 	// ThemDiaChiWebJson()
 
+	gin.SetMode(gin.ReleaseMode)
+	routeConfig := cors.DefaultConfig()
+	routeConfig.AllowAllOrigins = true
+	routeCors := cors.New(routeConfig)
+	fmt.Println(routeConfig.AllowAllOrigins)
 	router := gin.Default()
+	router.Use(routeCors)
 	router.GET("/dacsan", DocDacSanJson)
 	router.GET("/dacsan/:id", DocDacSanTheoIdJson)
 	router.POST("/dacsan", ThemDacSanJson)

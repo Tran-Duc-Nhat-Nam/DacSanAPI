@@ -60,15 +60,24 @@ func DocNoiBanTheoIdCSDL(id int) (NoiBan, error) {
 }
 
 func ThemNoiBanCSDL(noiBan NoiBan) (NoiBan, error) {
-	idDiaChi := TaoIdMoi("dia_chi")
-	_, err := db.Exec("INSERT INTO dia_chi VALUES (?, ?, ?, ?)", TaoIdMoi("dia_chi"), noiBan.DiaChi.SoNha, noiBan.DiaChi.TenDuong, noiBan.DiaChi.PhuongXa.ID)
+	diaChi, err := TimDiaChiCSDL(noiBan.DiaChi)
+	if err != nil {
+		ThemDiaChiCSDL(noiBan.DiaChi)
+	} else {
+		noiBan.DiaChi = diaChi
+	}
 	noiBan.ID = TaoIdMoi("noi_ban")
-	_, err = db.Exec("INSERT INTO noi_ban VALUES (?, ?, ?, ?, ?, ?, ?)", noiBan.ID, noiBan.Ten, noiBan.MoTa, idDiaChi, noiBan.LuotXem, noiBan.DiemDanhGia, noiBan.LuotDanhGia)
+	_, err = db.Exec("INSERT INTO noi_ban VALUES (?, ?, ?, ?, ?, ?, ?)", noiBan.ID, noiBan.Ten, noiBan.MoTa, noiBan.DiaChi.ID, noiBan.LuotXem, noiBan.DiemDanhGia, noiBan.LuotDanhGia)
 	return noiBan, err
 }
 
 func CapNhatNoiBanCSDL(noiBan NoiBan) error {
-	_, err := db.Exec("UPDATE noi_ban SET ten = ?, mo_ta = ?, dia_chi = ?, luot_xem = ?, diem_danh_gia = ?, luot_danh_gia = ? WHERE id = ?", noiBan.Ten, noiBan.MoTa, noiBan.DiaChi.ID, noiBan.LuotXem, noiBan.DiemDanhGia, noiBan.LuotDanhGia, noiBan.ID)
+	_, err := TimDiaChiCSDL(noiBan.DiaChi)
+	if err != nil {
+		ThemDiaChiCSDL(noiBan.DiaChi)
+	}
+	noiBan.ID = TaoIdMoi("noi_ban")
+	_, err = db.Exec("UPDATE noi_ban SET ten = ?, mo_ta = ?, dia_chi = ?, luot_xem = ?, diem_danh_gia = ?, luot_danh_gia = ? WHERE id = ?", noiBan.Ten, noiBan.MoTa, noiBan.DiaChi.ID, noiBan.LuotXem, noiBan.DiemDanhGia, noiBan.LuotDanhGia, noiBan.ID)
 	return err
 }
 

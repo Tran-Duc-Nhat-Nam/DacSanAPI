@@ -30,7 +30,7 @@ func DocDiaChiTheoIdCSDL(id int) (DiaChi, error) {
 }
 
 func TimDiaChiCSDL(diaChi DiaChi) (DiaChi, error) {
-	row := db.QueryRow("SELECT id FROM dia_chi WHERE so_nha = ?, ten_duong = ?, phuong_xa = ?", diaChi.SoNha, diaChi.TenDuong, diaChi.PhuongXa.ID)
+	row := db.QueryRow("SELECT id FROM dia_chi WHERE so_nha = ? AND ten_duong = ? AND phuong_xa = ?", diaChi.SoNha, diaChi.TenDuong, diaChi.PhuongXa.ID)
 	if err := row.Scan(&diaChi.ID); err != nil {
 		if err == sql.ErrNoRows {
 			return diaChi, err

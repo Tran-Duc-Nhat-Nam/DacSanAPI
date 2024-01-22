@@ -1,5 +1,6 @@
 FROM golang
 WORKDIR /app
+EXPOSE 8080
 ENV PORT 8080
 COPY go.mod .
 COPY go.sum .
