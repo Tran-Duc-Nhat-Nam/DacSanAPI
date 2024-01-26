@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"strconv"
 )
 
 type DacSan struct {
@@ -76,10 +75,65 @@ func DocDacSanCSDL() ([]DacSan, error) {
 	return dsDacSan, nil
 }
 
+func DocDacSanTheoSoLuonggCSDL(soLuong int) ([]DacSan, error) {
+	dsDacSan := []DacSan{}
+
+	rows, err := db.Query("SELECT * FROM dac_san LIMIT ? ORDER BY id ASC", soLuong)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var dacSan DacSan
+		var idHinhDaiDien int
+		if err := rows.Scan(&dacSan.ID, &dacSan.Ten, &dacSan.MoTa, &dacSan.CachCheBien, &dacSan.LuotXem, &dacSan.DiemDanhGia, &dacSan.LuotDanhGia, &idHinhDaiDien); err != nil {
+			return nil, err
+		}
+		thanhPhan, err := DocThanhPhanTheoIdCSDL(dacSan.ID)
+		if err == nil {
+			dacSan.ThanhPhan = thanhPhan
+		} else {
+			fmt.Println(err)
+		}
+		vungMien, err := DocVungMienDacSanCSDL(dacSan.ID)
+		if err == nil {
+			dacSan.VungMien = vungMien
+		} else {
+			fmt.Println(err)
+		}
+		muaDacSan, err := DocMuaDacSanCSDL(dacSan.ID)
+		if err == nil {
+			dacSan.MuaDacSan = muaDacSan
+		} else {
+			fmt.Println(err)
+		}
+		hinhAnh, err := DocHinhAnhDacSanCSDL(dacSan.ID)
+		if err == nil {
+			dacSan.HinhAnh = hinhAnh
+		} else {
+			fmt.Println(err)
+		}
+		hinhDaiDien, err := DocHinhAnhTheoIdCSDL(idHinhDaiDien)
+		if err == nil {
+			dacSan.HinhDaiDien = hinhDaiDien
+		} else {
+			fmt.Println(err)
+		}
+		dsDacSan = append(dsDacSan, dacSan)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return dsDacSan, nil
+}
+
 func DocDacSanTheoIdCSDL(id int) (DacSan, error) {
 	var dacSan DacSan
 
-	row := db.QueryRow("SELECT * FROM dac_san WHERE id = " + strconv.Itoa(id))
+	row := db.QueryRow("SELECT * FROM dac_san WHERE id = ?", id)
 
 	var idHinhDaiDien int
 	if err := row.Scan(&dacSan.ID, &dacSan.Ten, &dacSan.MoTa, &dacSan.CachCheBien, &dacSan.LuotXem, &dacSan.DiemDanhGia, &dacSan.LuotDanhGia, &idHinhDaiDien); err != nil {
@@ -134,6 +188,45 @@ func DocDacSanTheoNoiBanCSDL(id int) ([]DacSan, error) {
 			return nil, err
 		}
 		dacSan, err := DocDacSanTheoIdCSDL(idDacSan)
+		if err == nil {
+			dsDacSan = append(dsDacSan, dacSan)
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return dsDacSan, nil
+}
+
+func DocDacSanTheoTenCSDL(text string) ([]DacSan, error) {
+	return DocLike(text, "ten", "dac_san", DocDacSanTheoIdCSDL)
+}
+
+func DocDacSanTheoMoTaCSDL(text string) ([]DacSan, error) {
+	return DocLike(text, "mo_ta", "dac_san", DocDacSanTheoIdCSDL)
+}
+
+func DocDacSanTheoCachCheBienCSDL(text string) ([]DacSan, error) {
+	return DocLike(text, "cach_che_bien", "dac_san", DocDacSanTheoIdCSDL)
+}
+
+func DocLike(text string, cot string, bang string, timTheoID func(int) (DacSan, error)) ([]DacSan, error) {
+	dsDacSan := []DacSan{}
+
+	rows, err := db.Query("SELECT id FROM "+bang+" WHERE "+cot+" LIKE ? ORDER BY id ASC", "%"+text+"%")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var idDacSan int
+		if err := rows.Scan(&idDacSan); err != nil {
+			return nil, err
+		}
+		dacSan, err := timTheoID(idDacSan)
 		if err == nil {
 			dsDacSan = append(dsDacSan, dacSan)
 		}

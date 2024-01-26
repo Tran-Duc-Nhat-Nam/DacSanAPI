@@ -36,6 +36,6 @@ func DocLichSuXemDacSanCSDL(idNguoiDung int) ([]LuotXemDacSan, error) {
 }
 
 func ThemLuotXemDacSanCSDL(luotXem LuotXemDacSan) error {
-	_, err := db.Exec("INSERT INTO luot_xem_dac_san VALUES (?, ?, ?, ?)", luotXem.IdNguoiDung, luotXem.IdDacSan, time.Now())
+	_, err := db.Exec("INSERT INTO luot_xem_dac_san VALUES (?, ?, ?)", luotXem.IdNguoiDung, luotXem.IdDacSan, time.Now())
 	return err
 }
