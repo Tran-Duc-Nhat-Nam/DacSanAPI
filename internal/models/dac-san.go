@@ -169,6 +169,7 @@ func DocDacSanTheoIdCSDL(id int) (DacSan, error) {
 	} else {
 		fmt.Println(err)
 	}
+	dacSan.DiemDanhGia = TinhDiemDanhGiaDacSanCSDL(dacSan.ID)
 
 	return dacSan, nil
 }

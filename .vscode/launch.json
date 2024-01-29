@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/cmd/main.go",
-            "output": "${workspaceFolder}/bin/main"
+            "output": "${workspaceFolder}/bin/main",
         }
     ]
 }

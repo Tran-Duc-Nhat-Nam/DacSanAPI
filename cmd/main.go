@@ -4,8 +4,6 @@ import (
 	"nam/dac_san_api/internal/models"
 	"nam/dac_san_api/internal/routes"
 
-	"fmt"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -64,7 +62,7 @@ func main() {
 	routeConfig := cors.DefaultConfig()
 	routeConfig.AllowAllOrigins = true
 	routeCors := cors.New(routeConfig)
-	fmt.Println(routeConfig.AllowAllOrigins)
+
 	router := gin.Default()
 	router.Use(routeCors)
 	router.GET("/dacsan", routes.DocDacSanJson)
