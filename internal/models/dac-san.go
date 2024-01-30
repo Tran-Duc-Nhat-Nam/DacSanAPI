@@ -5,19 +5,19 @@ import (
 )
 
 type DacSan struct {
-	ID           int            `json:"id"`
-	Ten          string         `json:"ten"`
-	MoTa         string         `json:"mo_ta"`
-	CachCheBien  string         `json:"cach_che_bien"`
-	ThanhPhan    []ThanhPhan    `json:"thanh_phan"`
-	VungMien     []VungMien     `json:"vung_mien"`
-	MuaDacSan    []MuaDacSan    `json:"mua_dac_san"`
-	NoiBanDacSan []NoiBanDacSan `json:"noi_ban"`
-	LuotXem      int            `json:"luot_xem"`
-	DiemDanhGia  float64        `json:"diem_danh_gia"`
-	LuotDanhGia  int            `json:"luot_danh_gia"`
-	HinhDaiDien  HinhAnh        `json:"hinh_dai_dien"`
-	HinhAnh      []HinhAnh      `json:"hinh_anh"`
+	ID          int         `json:"id"`
+	Ten         string      `json:"ten"`
+	MoTa        string      `json:"mo_ta"`
+	CachCheBien string      `json:"cach_che_bien"`
+	ThanhPhan   []ThanhPhan `json:"thanh_phan"`
+	VungMien    []VungMien  `json:"vung_mien"`
+	MuaDacSan   []MuaDacSan `json:"mua_dac_san"`
+	DsNoiBan    []int       `json:"ds_noi_ban"`
+	LuotXem     int         `json:"luot_xem"`
+	DiemDanhGia float64     `json:"diem_danh_gia"`
+	LuotDanhGia int         `json:"luot_danh_gia"`
+	HinhDaiDien HinhAnh     `json:"hinh_dai_dien"`
+	HinhAnh     []HinhAnh   `json:"hinh_anh"`
 }
 
 func DocDacSanCSDL() ([]DacSan, error) {
@@ -292,8 +292,8 @@ func ThemDacSanCSDL(dacSan DacSan) (DacSan, error) {
 			return dacSan, err
 		}
 	}
-	for _, noiBanDacSan := range dacSan.NoiBanDacSan {
-		_, err = db.Exec("INSERT INTO thanh_phan VALUES (?, ?, ?, ?)", noiBanDacSan.IdNoiBan, dacSan.ID, noiBanDacSan.GiaBan, noiBanDacSan.DonViTinh)
+	for _, idNoiBan := range dacSan.DsNoiBan {
+		_, err = db.Exec("INSERT INTO noi_ban_dac_san VALUES (?, ?)", idNoiBan, dacSan.ID)
 		if err != nil {
 			return dacSan, err
 		}
@@ -335,8 +335,8 @@ func CapNhatDacSanCSDL(dacSan DacSan) error {
 		}
 	}
 	_, err = db.Exec("DELETE FROM noi_ban_dac_san WHERE id_dac_san = ?)", dacSan.ID)
-	for _, noiBanDacSan := range dacSan.NoiBanDacSan {
-		_, err = db.Exec("INSERT INTO thanh_phan VALUES (?, ?, ?, ?)", noiBanDacSan.IdNoiBan, dacSan.ID, noiBanDacSan.GiaBan, noiBanDacSan.DonViTinh)
+	for _, idNoiBan := range dacSan.DsNoiBan {
+		_, err = db.Exec("INSERT INTO noi_ban_dac_san VALUES (?, ?)", idNoiBan, dacSan.ID)
 		if err != nil {
 			return err
 		}

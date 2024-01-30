@@ -7,6 +7,7 @@ type NoiBan struct {
 	Ten         string  `json:"ten"`
 	MoTa        string  `json:"mo_ta"`
 	DiaChi      DiaChi  `json:"dia_chi"`
+	DsDacSan    []int   `json:"ds_dac_san"`
 	LuotXem     int     `json:"luot_xem"`
 	DiemDanhGia float64 `json:"diem_danh_gia"`
 	LuotDanhGia int     `json:"luot_danh_gia"`
@@ -30,6 +31,10 @@ func DocNoiBanCSDL() ([]NoiBan, error) {
 		diaChi, err := DocDiaChiTheoIdCSDL(diaChiId)
 		if err == nil {
 			noiBan.DiaChi = diaChi
+		}
+		dsID, err := DocNoiBanDacSanTheoNoiBanCSDL(noiBan.ID)
+		if err == nil {
+			noiBan.DsDacSan = dsID
 		}
 		dsNoiBan = append(dsNoiBan, noiBan)
 	}
@@ -56,18 +61,30 @@ func DocNoiBanTheoIdCSDL(id int) (NoiBan, error) {
 	if err == nil {
 		noiBan.DiaChi = diaChi
 	}
+	dsID, err := DocNoiBanDacSanTheoNoiBanCSDL(noiBan.ID)
+	if err == nil {
+		noiBan.DsDacSan = dsID
+	}
 	return noiBan, nil
 }
 
 func ThemNoiBanCSDL(noiBan NoiBan) (NoiBan, error) {
 	diaChi, err := TimDiaChiCSDL(noiBan.DiaChi)
 	if err != nil {
-		ThemDiaChiCSDL(noiBan.DiaChi)
+		diaChi, err = ThemDiaChiCSDL(noiBan.DiaChi)
 	} else {
 		noiBan.DiaChi = diaChi
 	}
 	noiBan.ID = TaoIdMoi("noi_ban")
-	_, err = db.Exec("INSERT INTO noi_ban VALUES (?, ?, ?, ?, ?, ?, ?)", noiBan.ID, noiBan.Ten, noiBan.MoTa, noiBan.DiaChi.ID, noiBan.LuotXem, noiBan.DiemDanhGia, noiBan.LuotDanhGia)
+	_, err = db.Exec("INSERT INTO noi_ban VALUES (?, ?, ?, ?, ?, ?, ?)", noiBan.ID, noiBan.Ten, noiBan.MoTa, diaChi.ID, noiBan.LuotXem, noiBan.DiemDanhGia, noiBan.LuotDanhGia)
+	if err == nil {
+		for _, idDacSan := range noiBan.DsDacSan {
+			_, err = db.Exec("INSERT INTO noi_ban_dac_san VALUES (?, ?)", noiBan.ID, idDacSan)
+			if err != nil {
+				return noiBan, err
+			}
+		}
+	}
 	return noiBan, err
 }
 
@@ -78,6 +95,15 @@ func CapNhatNoiBanCSDL(noiBan NoiBan) error {
 	}
 	noiBan.ID = TaoIdMoi("noi_ban")
 	_, err = db.Exec("UPDATE noi_ban SET ten = ?, mo_ta = ?, dia_chi = ?, luot_xem = ?, diem_danh_gia = ?, luot_danh_gia = ? WHERE id = ?", noiBan.Ten, noiBan.MoTa, noiBan.DiaChi.ID, noiBan.LuotXem, noiBan.DiemDanhGia, noiBan.LuotDanhGia, noiBan.ID)
+	if err != nil {
+		_, err = db.Exec("DELETE FROM noi_ban_dac_san WHERE id_noi_ban = ?)", noiBan.ID)
+		for _, idDacSan := range noiBan.DsDacSan {
+			_, err = db.Exec("INSERT INTO noi_ban_dac_san VALUES (?, ?)", noiBan.ID, idDacSan)
+			if err != nil {
+				return err
+			}
+		}
+	}
 	return err
 }
 
