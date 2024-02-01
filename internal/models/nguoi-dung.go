@@ -50,6 +50,10 @@ func DocNguoiDungCSDL() ([]NguoiDung, error) {
 		if err == nil {
 			nguoiDung.LichSuDanhGiaNoiBan = lichSuDanhGiaNoiBan
 		}
+		diaChi, err := DocDiaChiTheoIdCSDL(idDiaChi)
+		if err == nil {
+			nguoiDung.DiaChi = diaChi
+		}
 		// nguoiDung.NgaySinh = ngaySinh.UnixMilli()
 		dsNguoiDung = append(dsNguoiDung, nguoiDung)
 	}
@@ -96,7 +100,7 @@ func ThemNguoiDungCSDL(nguoiDung NguoiDung) (NguoiDung, error) {
 	nguoiDung.ID = TaoIdMoi("nguoi_dung")
 	diaChi, err := TimDiaChiCSDL(nguoiDung.DiaChi)
 	if err != nil {
-		ThemDiaChiCSDL(nguoiDung.DiaChi)
+		diaChi, err = ThemDiaChiCSDL(nguoiDung.DiaChi)
 	} else {
 		nguoiDung.DiaChi = diaChi
 	}
@@ -105,11 +109,8 @@ func ThemNguoiDungCSDL(nguoiDung NguoiDung) (NguoiDung, error) {
 }
 
 func CapNhatNguoiDungCSDL(nguoiDung NguoiDung) error {
-	_, err := TimDiaChiCSDL(nguoiDung.DiaChi)
-	if err != nil {
-		ThemDiaChiCSDL(nguoiDung.DiaChi)
-	}
-	_, err = db.Exec("UPDATE nguoi_dung SET ten = ?, is_nam = ?, ngay_sinh = ?, dia_chi = ?, so_dien_thoai = ? WHERE id = ?", nguoiDung.Ten, nguoiDung.IsNam, nguoiDung.NgaySinh, nguoiDung.DiaChi.ID, nguoiDung.SoDienThoai, nguoiDung.ID)
+	CapNhatDiaChiCSDL(nguoiDung.DiaChi)
+	_, err := db.Exec("UPDATE nguoi_dung SET ten = ?, is_nam = ?, ngay_sinh = ?, dia_chi = ?, so_dien_thoai = ? WHERE id = ?", nguoiDung.Ten, nguoiDung.IsNam, nguoiDung.NgaySinh, nguoiDung.DiaChi.ID, nguoiDung.SoDienThoai, nguoiDung.ID)
 	return err
 }
 
