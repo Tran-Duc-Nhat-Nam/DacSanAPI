@@ -75,10 +75,65 @@ func DocDacSanCSDL() ([]DacSan, error) {
 	return dsDacSan, nil
 }
 
-func DocDacSanTheoSoLuonggCSDL(soLuong int) ([]DacSan, error) {
+func DocDacSanTheoSoLuongCSDL(soLuong int) ([]DacSan, error) {
 	dsDacSan := []DacSan{}
 
 	rows, err := db.Query("SELECT * FROM dac_san LIMIT ? ORDER BY id ASC", soLuong)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var dacSan DacSan
+		var idHinhDaiDien int
+		if err := rows.Scan(&dacSan.ID, &dacSan.Ten, &dacSan.MoTa, &dacSan.CachCheBien, &dacSan.LuotXem, &dacSan.DiemDanhGia, &dacSan.LuotDanhGia, &idHinhDaiDien); err != nil {
+			return nil, err
+		}
+		thanhPhan, err := DocThanhPhanTheoIdCSDL(dacSan.ID)
+		if err == nil {
+			dacSan.ThanhPhan = thanhPhan
+		} else {
+			fmt.Println(err)
+		}
+		vungMien, err := DocVungMienDacSanCSDL(dacSan.ID)
+		if err == nil {
+			dacSan.VungMien = vungMien
+		} else {
+			fmt.Println(err)
+		}
+		muaDacSan, err := DocMuaDacSanCSDL(dacSan.ID)
+		if err == nil {
+			dacSan.MuaDacSan = muaDacSan
+		} else {
+			fmt.Println(err)
+		}
+		hinhAnh, err := DocHinhAnhDacSanCSDL(dacSan.ID)
+		if err == nil {
+			dacSan.HinhAnh = hinhAnh
+		} else {
+			fmt.Println(err)
+		}
+		hinhDaiDien, err := DocHinhAnhTheoIdCSDL(idHinhDaiDien)
+		if err == nil {
+			dacSan.HinhDaiDien = hinhDaiDien
+		} else {
+			fmt.Println(err)
+		}
+		dsDacSan = append(dsDacSan, dacSan)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return dsDacSan, nil
+}
+
+func DocDacSanTheoTrangCSDL(soTrang int, doDaiTrang int) ([]DacSan, error) {
+	dsDacSan := []DacSan{}
+
+	rows, err := db.Query("SELECT * FROM dac_san ORDER BY id ASC LIMIT ?, ?", soTrang*doDaiTrang, doDaiTrang)
 	if err != nil {
 		return nil, err
 	}

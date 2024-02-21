@@ -1,20 +1,19 @@
 package models
 
 import (
-	"strconv"
 	"time"
 )
 
 type LuotXemNoiBan struct {
-	IdNguoiDung int       `json:"id_nguoi_dung"`
+	IdNguoiDung string    `json:"id_nguoi_dung"`
 	IdNoiBan    int       `json:"id_noi_ban"`
 	ThoiGianXem time.Time `json:"thoi_gian"`
 }
 
-func DocLichSuXemNoiBanCSDL(idNguoiDung int) ([]LuotXemNoiBan, error) {
+func DocLichSuXemNoiBanCSDL(idNguoiDung string) ([]LuotXemNoiBan, error) {
 	lichSuXem := []LuotXemNoiBan{}
 
-	rows, err := db.Query("SELECT * FROM lich_su_xem_noi_ban WHERE id_nguoi_dung = " + strconv.Itoa(idNguoiDung))
+	rows, err := db.Query("SELECT * FROM lich_su_xem_noi_ban WHERE id_nguoi_dung = " + idNguoiDung)
 	if err != nil {
 		return nil, err
 	}

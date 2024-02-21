@@ -15,6 +15,25 @@ func DocDacSanJson(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, dsDacSan)
 }
 
+func DocDacSanTheoTrangJson(c *gin.Context) {
+	soTrang, err := strconv.Atoi(c.Param("index"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	kichThuocTrang, err := strconv.Atoi(c.Param("size"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	dacSan, err := models.DocDacSanTheoTrangCSDL(soTrang, kichThuocTrang)
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	c.IndentedJSON(http.StatusOK, dacSan)
+}
+
 func DocDacSanTheoIdJson(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -71,10 +90,7 @@ func XemDacSan(c *gin.Context) {
 	if err != nil {
 		fmt.Print(err.Error())
 	}
-	idNguoiDung, err := strconv.Atoi(c.Param("idnguoidung"))
-	if err != nil {
-		fmt.Print(err.Error())
-	}
+	idNguoiDung := c.Param("idnguoidung")
 	dacSan, err := models.DocDacSanTheoIdCSDL(id)
 	if err != nil {
 		fmt.Print(err.Error())

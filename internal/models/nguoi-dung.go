@@ -2,12 +2,11 @@ package models
 
 import (
 	"database/sql"
-	"strconv"
 	"time"
 )
 
 type NguoiDung struct {
-	ID                  int                 `json:"id"`
+	ID                  string              `json:"id"`
 	Email               string              `json:"email"`
 	Ten                 string              `json:"ten"`
 	IsNam               bool                `json:"is_nam"`
@@ -60,12 +59,12 @@ func DocNguoiDungCSDL() ([]NguoiDung, error) {
 	return dsNguoiDung, nil
 }
 
-func DocNguoiDungTheoIdCSDL(id int) (NguoiDung, error) {
+func DocNguoiDungTheoIdCSDL(id string) (NguoiDung, error) {
 	var nguoiDung NguoiDung
 	var idDiaChi int
 	// var ngaySinh time.Time
 
-	row := db.QueryRow("SELECT * FROM nguoi_dung WHERE id = ?", strconv.Itoa(id))
+	row := db.QueryRow("SELECT * FROM nguoi_dung WHERE id = ?", id)
 	if err := row.Scan(&nguoiDung.ID, &nguoiDung.Email, &nguoiDung.Ten, &nguoiDung.IsNam, &nguoiDung.NgaySinh, &idDiaChi, &nguoiDung.SoDienThoai); err != nil {
 		if err == sql.ErrNoRows {
 			return nguoiDung, err
@@ -97,7 +96,6 @@ func DocNguoiDungTheoIdCSDL(id int) (NguoiDung, error) {
 }
 
 func ThemNguoiDungCSDL(nguoiDung NguoiDung) (NguoiDung, error) {
-	nguoiDung.ID = TaoIdMoi("nguoi_dung")
 	diaChi, err := TimDiaChiCSDL(nguoiDung.DiaChi)
 	if err != nil {
 		diaChi, err = ThemDiaChiCSDL(nguoiDung.DiaChi)

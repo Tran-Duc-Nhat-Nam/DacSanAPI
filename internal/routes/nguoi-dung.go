@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"nam/dac_san_api/internal/models"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,13 +17,11 @@ func DocNguoiDungJson(c *gin.Context) {
 }
 
 func DocNguoiDungTheoIdJson(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		fmt.Print(err.Error())
-	}
+	id := c.Param("id")
 	nguoiDung, err := models.DocNguoiDungTheoIdCSDL(id)
 	if err != nil {
 		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, nil)
 	}
 	c.IndentedJSON(http.StatusOK, nguoiDung)
 }
@@ -34,13 +31,14 @@ func ThemNguoiDungJson(c *gin.Context) {
 
 	if err := c.BindJSON(&nguoiDung); err != nil {
 		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, nil)
 		return
 	}
 
 	nguoiDung, err := models.ThemNguoiDungCSDL(nguoiDung)
 	if err != nil {
 		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, nguoiDung)
+		c.IndentedJSON(http.StatusConflict, nil)
 	} else {
 		c.IndentedJSON(http.StatusCreated, nguoiDung)
 	}

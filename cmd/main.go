@@ -71,6 +71,8 @@ func main() {
 	router.GET("/dacsan/cachchebien=:cachchebien", routes.DocDacSanTheoCachCheBienJson)
 	router.GET("/dacsan/:id", routes.DocDacSanTheoIdJson)
 	router.GET("/dacsan/:id/nguoidung=:idnguoidung", routes.XemDacSan)
+	router.POST("/dacsan/:id/nguoidung=:idnguoidung", routes.DanhGiaDacSan)
+	router.GET("/dacsan/size=:size/index=:index", routes.DocDacSanTheoTrangJson)
 	router.POST("/dacsan", routes.ThemDacSanJson)
 	router.PUT("/dacsan", routes.CapNhatDacSanJson)
 	router.DELETE("/dacsan", routes.XoaDacSanJson)

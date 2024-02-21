@@ -6,16 +6,16 @@ import (
 )
 
 type LuotDanhGiaNoiBan struct {
-	IdNguoiDung     int       `json:"id_nguoi_dung"`
+	IdNguoiDung     string    `json:"id_nguoi_dung"`
 	IdNoiBan        int       `json:"id_noi_ban"`
 	ThoiGianDanhGia time.Time `json:"thoi_gian"`
 	DiemDanhGia     int       `json:"diem_danh_gia"`
 }
 
-func DocLichSuDanhGiaNoiBanCSDL(idNguoiDung int) ([]LuotDanhGiaNoiBan, error) {
+func DocLichSuDanhGiaNoiBanCSDL(idNguoiDung string) ([]LuotDanhGiaNoiBan, error) {
 	lichSuDanhGia := []LuotDanhGiaNoiBan{}
 
-	rows, err := db.Query("SELECT * FROM danh_gia_noi_ban WHERE id_nguoi_dung = " + strconv.Itoa(idNguoiDung))
+	rows, err := db.Query("SELECT * FROM danh_gia_noi_ban WHERE id_nguoi_dung = " + idNguoiDung)
 	if err != nil {
 		return nil, err
 	}

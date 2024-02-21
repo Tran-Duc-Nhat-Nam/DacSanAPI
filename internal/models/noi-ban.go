@@ -89,9 +89,9 @@ func ThemNoiBanCSDL(noiBan NoiBan) (NoiBan, error) {
 }
 
 func CapNhatNoiBanCSDL(noiBan NoiBan) error {
-	_, err := TimDiaChiCSDL(noiBan.DiaChi)
+	err := CapNhatDiaChiCSDL(noiBan.DiaChi)
 	if err != nil {
-		ThemDiaChiCSDL(noiBan.DiaChi)
+		return err
 	}
 	noiBan.ID = TaoIdMoi("noi_ban")
 	_, err = db.Exec("UPDATE noi_ban SET ten = ?, mo_ta = ?, dia_chi = ?, luot_xem = ?, diem_danh_gia = ?, luot_danh_gia = ? WHERE id = ?", noiBan.Ten, noiBan.MoTa, noiBan.DiaChi.ID, noiBan.LuotXem, noiBan.DiemDanhGia, noiBan.LuotDanhGia, noiBan.ID)
