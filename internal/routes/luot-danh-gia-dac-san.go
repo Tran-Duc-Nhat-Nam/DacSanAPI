@@ -37,3 +37,18 @@ func DanhGiaDacSan(c *gin.Context) {
 	}
 	c.IndentedJSON(http.StatusOK, true)
 }
+
+func DocDiemDacSan(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, -1)
+	}
+	idNguoiDung := c.Param("idnguoidung")
+	diem, err := models.DocDiemDacSanTheoNguoiDungCSDL(id, idNguoiDung)
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, -1)
+	}
+	c.IndentedJSON(http.StatusOK, diem)
+}

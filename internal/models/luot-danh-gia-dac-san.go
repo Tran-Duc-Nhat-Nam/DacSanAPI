@@ -60,6 +60,18 @@ func DocDanhGiaDacSanCSDL(idDacSan int) ([]LuotDanhGiaDacSan, error) {
 	return lichSuDanhGia, nil
 }
 
+func DocDiemDacSanTheoNguoiDungCSDL(idDacSan int, idNguoiDung string) (int, error) {
+	var diem int
+
+	rows := db.QueryRow("SELECT diem_danh_gia FROM luot_danh_gia_dac_san WHERE id_dac_san = ? AND id_nguoi_dung = ?", idDacSan, idNguoiDung)
+
+	if err := rows.Scan(&diem); err != nil {
+		return -1, err
+	}
+
+	return diem, nil
+}
+
 func TinhDiemDanhGiaDacSanCSDL(idDacSan int) float64 {
 	lichSuDanhGia := []LuotDanhGiaDacSan{}
 	tongDiem := 0.0
@@ -87,8 +99,13 @@ func TinhDiemDanhGiaDacSanCSDL(idDacSan int) float64 {
 }
 
 func ThemDanhGiaDacSanCSDL(luotDanhGia LuotDanhGiaDacSan) error {
-	_, err := db.Exec("INSERT INTO luot_danh_gia_dac_san VALUES (?, ?, ?, ?)", luotDanhGia.IdNguoiDung, luotDanhGia.IdDacSan, time.Now(), luotDanhGia.DiemDanhGia)
-	return err
+	kq, err := DocDiemDacSanTheoNguoiDungCSDL(luotDanhGia.IdDacSan, luotDanhGia.IdNguoiDung)
+	if kq == -1 || err != nil {
+		_, err = db.Exec("INSERT INTO luot_danh_gia_dac_san VALUES (?, ?, ?, ?)", luotDanhGia.IdNguoiDung, luotDanhGia.IdDacSan, time.Now(), luotDanhGia.DiemDanhGia)
+		return err
+	} else {
+		return CapNhatDanhGiaDacSanCSDL(luotDanhGia)
+	}
 }
 
 func CapNhatDanhGiaDacSanCSDL(luotDanhGia LuotDanhGiaDacSan) error {
