@@ -11,11 +11,11 @@ import (
 )
 
 func DocDacSanJson(c *gin.Context) {
-	dsDacSan, _ := models.DocDacSanCSDL()
+	dsDacSan, _ := models.DocDanhSachDacSanCSDL()
 	c.IndentedJSON(http.StatusOK, dsDacSan)
 }
 
-func DocDacSanTheoTrangJson(c *gin.Context) {
+func DocTrangDacSanJson(c *gin.Context) {
 	soTrang, err := strconv.Atoi(c.Param("index"))
 	if err != nil {
 		fmt.Print(err.Error())
@@ -26,7 +26,99 @@ func DocDacSanTheoTrangJson(c *gin.Context) {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())
 	}
-	dacSan, err := models.DocDacSanTheoTrangCSDL(soTrang, kichThuocTrang)
+	dacSan, err := models.DocTrangDacSanCSDL(soTrang, kichThuocTrang)
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	c.IndentedJSON(http.StatusOK, dacSan)
+}
+
+func DocTrangDacSanTheoTenJson(c *gin.Context) {
+	ten := c.Param("ten")
+	soTrang, err := strconv.Atoi(c.Param("index"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	kichThuocTrang, err := strconv.Atoi(c.Param("size"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	dacSan, err := models.DocTrangDacSanTheoTenCSDL(soTrang, kichThuocTrang, ten)
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	c.IndentedJSON(http.StatusOK, dacSan)
+}
+
+func DocTrangDacSanTheoVungMienJson(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	soTrang, err := strconv.Atoi(c.Param("index"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	kichThuocTrang, err := strconv.Atoi(c.Param("size"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	dacSan, err := models.DocTrangDacSanTheoVungMienCSDL(soTrang, kichThuocTrang, id)
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	c.IndentedJSON(http.StatusOK, dacSan)
+}
+
+func DocTrangDacSanTheoMuaDacSanJson(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	soTrang, err := strconv.Atoi(c.Param("index"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	kichThuocTrang, err := strconv.Atoi(c.Param("size"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	dacSan, err := models.DocTrangDacSanTheoMuaDacSanCSDL(soTrang, kichThuocTrang, id)
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	c.IndentedJSON(http.StatusOK, dacSan)
+}
+
+func DocTrangDacSanTheoNguyenLieuJson(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	soTrang, err := strconv.Atoi(c.Param("index"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	kichThuocTrang, err := strconv.Atoi(c.Param("size"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	dacSan, err := models.DocTrangDacSanTheoNguyenLieuCSDL(soTrang, kichThuocTrang, id)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())
