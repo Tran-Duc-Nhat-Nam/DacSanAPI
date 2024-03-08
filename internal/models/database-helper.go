@@ -22,7 +22,6 @@ func ConnectDatabase() {
 
 	var err error
 	db, err = sql.Open("mysql", cfg.FormatDSN())
-	// db, err = connectWithConnector()
 	if err != nil {
 		log.Fatal(err)
 	}

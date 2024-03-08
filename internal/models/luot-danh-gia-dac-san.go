@@ -8,8 +8,9 @@ import (
 type LuotDanhGiaDacSan struct {
 	IdNguoiDung     string    `json:"id_nguoi_dung"`
 	IdDacSan        int       `json:"id_dac_san"`
-	ThoiGianDanhGia time.Time `json:"thoi_gian"`
+	ThoiGianDanhGia time.Time `json:"thoi_gian_danh_gia"`
 	DiemDanhGia     int       `json:"diem_danh_gia"`
+	NoiDung         string    `json:"noi_dung"`
 }
 
 func DocLichSuDanhGiaDacSanCSDL(idNguoiDung string) ([]LuotDanhGiaDacSan, error) {
@@ -23,7 +24,7 @@ func DocLichSuDanhGiaDacSanCSDL(idNguoiDung string) ([]LuotDanhGiaDacSan, error)
 
 	for rows.Next() {
 		var luotDanhGia LuotDanhGiaDacSan
-		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdDacSan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia); err != nil {
+		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdDacSan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia, &luotDanhGia.NoiDung); err != nil {
 			return nil, err
 		}
 		lichSuDanhGia = append(lichSuDanhGia, luotDanhGia)
@@ -39,7 +40,7 @@ func DocLichSuDanhGiaDacSanCSDL(idNguoiDung string) ([]LuotDanhGiaDacSan, error)
 func DocDanhGiaDacSanCSDL(idDacSan int) ([]LuotDanhGiaDacSan, error) {
 	lichSuDanhGia := []LuotDanhGiaDacSan{}
 
-	rows, err := db.Query("SELECT * FROM danh_gia_dac_san WHERE id_dac_san = " + strconv.Itoa(idDacSan))
+	rows, err := db.Query("SELECT * FROM danh_gia_dac_san WHERE id_dac_san = ?", idDacSan)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +48,7 @@ func DocDanhGiaDacSanCSDL(idDacSan int) ([]LuotDanhGiaDacSan, error) {
 
 	for rows.Next() {
 		var luotDanhGia LuotDanhGiaDacSan
-		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdDacSan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia); err != nil {
+		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdDacSan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia, &luotDanhGia.NoiDung); err != nil {
 			return nil, err
 		}
 		lichSuDanhGia = append(lichSuDanhGia, luotDanhGia)
@@ -60,16 +61,16 @@ func DocDanhGiaDacSanCSDL(idDacSan int) ([]LuotDanhGiaDacSan, error) {
 	return lichSuDanhGia, nil
 }
 
-func DocDiemDacSanTheoNguoiDungCSDL(idDacSan int, idNguoiDung string) (int, error) {
-	var diem int
+func DocDacSanTheoNguoiDungCSDL(idDacSan int, idNguoiDung string) (LuotDanhGiaDacSan, error) {
+	var danhGia LuotDanhGiaDacSan
 
-	rows := db.QueryRow("SELECT diem_danh_gia FROM luot_danh_gia_dac_san WHERE id_dac_san = ? AND id_nguoi_dung = ?", idDacSan, idNguoiDung)
+	rows := db.QueryRow("SELECT * FROM luot_danh_gia_dac_san WHERE id_dac_san = ? AND id_nguoi_dung = ?", idDacSan, idNguoiDung)
 
-	if err := rows.Scan(&diem); err != nil {
-		return -1, err
+	if err := rows.Scan(&danhGia.IdNguoiDung, &danhGia.IdDacSan, &danhGia.ThoiGianDanhGia, &danhGia.DiemDanhGia, &danhGia.NoiDung); err != nil {
+		return danhGia, err
 	}
 
-	return diem, nil
+	return danhGia, nil
 }
 
 func TinhDiemDanhGiaDacSanCSDL(idDacSan int) float64 {
@@ -84,7 +85,7 @@ func TinhDiemDanhGiaDacSanCSDL(idDacSan int) float64 {
 
 	for rows.Next() {
 		var luotDanhGia LuotDanhGiaDacSan
-		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdDacSan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia); err != nil {
+		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdDacSan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia, &luotDanhGia.NoiDung); err != nil {
 			return -1
 		}
 		lichSuDanhGia = append(lichSuDanhGia, luotDanhGia)
@@ -99,9 +100,9 @@ func TinhDiemDanhGiaDacSanCSDL(idDacSan int) float64 {
 }
 
 func ThemDanhGiaDacSanCSDL(luotDanhGia LuotDanhGiaDacSan) error {
-	kq, err := DocDiemDacSanTheoNguoiDungCSDL(luotDanhGia.IdDacSan, luotDanhGia.IdNguoiDung)
-	if kq == -1 || err != nil {
-		_, err = db.Exec("INSERT INTO luot_danh_gia_dac_san VALUES (?, ?, ?, ?)", luotDanhGia.IdNguoiDung, luotDanhGia.IdDacSan, time.Now(), luotDanhGia.DiemDanhGia)
+	_, err := DocDacSanTheoNguoiDungCSDL(luotDanhGia.IdDacSan, luotDanhGia.IdNguoiDung)
+	if err != nil {
+		_, err = db.Exec("INSERT INTO luot_danh_gia_dac_san VALUES (?, ?, ?, ?, ?)", luotDanhGia.IdNguoiDung, luotDanhGia.IdDacSan, luotDanhGia.ThoiGianDanhGia, luotDanhGia.DiemDanhGia, luotDanhGia.NoiDung)
 		return err
 	} else {
 		return CapNhatDanhGiaDacSanCSDL(luotDanhGia)
@@ -109,7 +110,7 @@ func ThemDanhGiaDacSanCSDL(luotDanhGia LuotDanhGiaDacSan) error {
 }
 
 func CapNhatDanhGiaDacSanCSDL(luotDanhGia LuotDanhGiaDacSan) error {
-	_, err := db.Exec("UPDATE luot_danh_gia_dac_san SET thoi_gian_danh_gia = ?, diem_danh_gia = ? WHERE id_nguoi_dung = ? AND id_dac_san = ?", time.Now(), luotDanhGia.DiemDanhGia, luotDanhGia.IdNguoiDung, luotDanhGia.IdDacSan)
+	_, err := db.Exec("UPDATE luot_danh_gia_dac_san SET thoi_gian_danh_gia = ?, diem_danh_gia = ?, noi_dung = ? WHERE id_nguoi_dung = ? AND id_dac_san = ?", luotDanhGia.ThoiGianDanhGia, luotDanhGia.DiemDanhGia, luotDanhGia.NoiDung, luotDanhGia.IdNguoiDung, luotDanhGia.IdDacSan)
 	return err
 }
 

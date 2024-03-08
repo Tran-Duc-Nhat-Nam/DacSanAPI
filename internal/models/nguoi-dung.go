@@ -91,14 +91,13 @@ func DocNguoiDungTheoIdCSDL(id string) (NguoiDung, error) {
 	if err == nil {
 		nguoiDung.DiaChi = diaChi
 	}
-	// nguoiDung.NgaySinh = ngaySinh.UnixMilli()
 	return nguoiDung, nil
 }
 
 func ThemNguoiDungCSDL(nguoiDung NguoiDung) (NguoiDung, error) {
 	diaChi, err := TimDiaChiCSDL(nguoiDung.DiaChi)
 	if err != nil {
-		diaChi, err = ThemDiaChiCSDL(nguoiDung.DiaChi)
+		nguoiDung.DiaChi, err = ThemDiaChiCSDL(nguoiDung.DiaChi)
 	} else {
 		nguoiDung.DiaChi = diaChi
 	}

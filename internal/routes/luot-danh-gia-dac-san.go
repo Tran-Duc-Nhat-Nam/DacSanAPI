@@ -2,12 +2,10 @@ package routes
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"nam/dac_san_api/internal/models"
 	"net/http"
 	"strconv"
-	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 func TinhDiemDanhGiaDacSanTheoIdJson(c *gin.Context) {
@@ -18,37 +16,51 @@ func TinhDiemDanhGiaDacSanTheoIdJson(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, models.TinhDiemDanhGiaDacSanCSDL(id))
 }
 
-func DanhGiaDacSan(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
+func DanhGiaDacSanJson(c *gin.Context) {
+	var danhGia models.LuotDanhGiaDacSan
+
+	if err := c.BindJSON(&danhGia); err != nil {
 		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, err.Error())
+		return
 	}
-	idNguoiDung := c.Param("idnguoidung")
-	dacSan, err := models.DocDacSanTheoIdCSDL(id)
-	if err != nil {
+
+	if err := models.ThemDanhGiaDacSanCSDL(danhGia); err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())
-	}
-	err = models.ThemDanhGiaDacSanCSDL(models.LuotDanhGiaDacSan{IdNguoiDung: idNguoiDung, IdDacSan: dacSan.ID, ThoiGianDanhGia: time.Now(), DiemDanhGia: 5})
-	if err != nil {
-		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, err.Error())
+		return
 	}
 	c.IndentedJSON(http.StatusOK, true)
 }
 
-func DocDiemDacSan(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+func DocDanhGiaDacSanTheoNguoiDungJson(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("idDacSan"))
 	if err != nil {
 		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, -1)
+		c.IndentedJSON(http.StatusConflict, err.Error())
+		return
 	}
-	idNguoiDung := c.Param("idnguoidung")
-	diem, err := models.DocDiemDacSanTheoNguoiDungCSDL(id, idNguoiDung)
+	idNguoiDung := c.Param("idNguoiDung")
+	diem, err := models.DocDacSanTheoNguoiDungCSDL(id, idNguoiDung)
 	if err != nil {
 		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, -1)
+		c.IndentedJSON(http.StatusConflict, err.Error())
+		return
+	}
+	c.IndentedJSON(http.StatusOK, diem)
+}
+
+func DocDanhGiaDacSanTheoDacSanJson(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("idDacSan"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+		return
+	}
+	diem, err := models.DocDanhGiaDacSanCSDL(id)
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+		return
 	}
 	c.IndentedJSON(http.StatusOK, diem)
 }

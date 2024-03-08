@@ -55,8 +55,8 @@ func DocYeuThichDacSanTheoNguoiDungCSDL(idNguoiDung string) ([]YeuThichDacSan, e
 
 func DocYeuThichDacSanCSDL(yeuThichDacSan YeuThichDacSan) error {
 	rows := db.QueryRow("SELECT * FROM yeu_thich_dac_san WHERE id_dac_san = ? AND id_nguoi_dung = ?", yeuThichDacSan.IdDacSan, yeuThichDacSan.IdNguoiDung)
-
-	return rows.Scan(&yeuThichDacSan.IdDacSan, &yeuThichDacSan.IdNguoiDung)
+	err := rows.Scan(&yeuThichDacSan.IdDacSan, &yeuThichDacSan.IdNguoiDung)
+	return err
 }
 
 func ThemYeuThichDacSanCSDL(yeuThichDacSan YeuThichDacSan) error {
