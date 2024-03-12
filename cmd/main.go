@@ -42,13 +42,21 @@ func main() {
 	router.POST("/dacsan/theonguyenlieu/theomua/ten=:ten/size=:size/index=:index", routes.TimKiemDacSanTheoNguyenLieuMuaAPI)
 	router.POST("/dacsan/theodieukien/ten=:ten/size=:size/index=:index", routes.TimKiemDacSanTheoDieuKien)
 	// Đánh giá đặc sản
-	router.GET("/danhgia/dacsan=:idDacSan", routes.DocDanhGiaDacSanTheoDacSanJson)
-	router.GET("/danhgia/dacsan=:idDacSan/nguoidung=:idNguoiDung", routes.DocDanhGiaDacSanTheoNguoiDungJson)
-	router.POST("/danhgia", routes.DanhGiaDacSanJson)
+	router.GET("/danhgia/dacsan=:idDacSan", routes.DocDanhSachDanhGiaDacSanAPI)
+	router.GET("/danhgia/dacsan=:idDacSan/nguoidung=:idNguoiDung", routes.DocDanhGiaDacSanTheoNguoiDungAPI)
+	router.POST("/danhgia/dacsan=:idDacSan", routes.DanhGiaDacSanAPI)
 	// Yêu thích đặc sản
-	router.GET("/yeuthich/dacsan=:idDacSan/nguoidung=:idNguoiDung", routes.DocYeuThichDacSan)
-	router.POST("/yeuthich/dacsan=:idDacSan/nguoidung=:idNguoiDung", routes.YeuThichDacSan)
-	router.DELETE("/yeuthich/dacsan=:idDacSan/nguoidung=:idNguoiDung", routes.BoYeuThichDacSan)
+	router.GET("/yeuthich/dacsan=:idDacSan/nguoidung=:idNguoiDung", routes.DocYeuThichDacSanAPI)
+	router.POST("/yeuthich/dacsan=:idDacSan/nguoidung=:idNguoiDung", routes.YeuThichDacSanAPI)
+	router.DELETE("/yeuthich/dacsan=:idDacSan/nguoidung=:idNguoiDung", routes.BoYeuThichDacSanAPI)
+	// Đánh giá nơi bán
+	router.GET("/danhgia/noiban=:idNoiBan", routes.DocDanhSachDanhGiaNoiBanAPI)
+	router.GET("/danhgia/noiban=:idNoiBan/nguoidung=:idNguoiDung", routes.DocDanhGiaNoiBanTheoNguoiDungAPI)
+	router.POST("/danhgia/noiban=:idNoiBan", routes.DanhGiaNoiBanAPI)
+	// Yêu thích nơi bán
+	router.GET("/yeuthich/noiban=:idNoiBan/nguoidung=:idNguoiDung", routes.DocYeuThichNoiBanAPI)
+	router.POST("/yeuthich/noiban=:idNoiBan/nguoidung=:idNguoiDung", routes.YeuThichNoiBanAPI)
+	router.DELETE("/yeuthich/noiban=:idNoiBan/nguoidung=:idNguoiDung", routes.BoYeuThichNoiBanAPI)
 	// Nơi bán
 	router.GET("/noiban", routes.DocNoiBanAPI)
 	router.POST("/noiban", routes.ThemNoiBanAPI)

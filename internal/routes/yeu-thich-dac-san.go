@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func YeuThichDacSan(c *gin.Context) {
+func YeuThichDacSanAPI(c *gin.Context) {
 	idDacSan, err := strconv.Atoi(c.Param("idDacSan"))
 	if err != nil {
 		fmt.Print(err.Error())
@@ -27,7 +27,7 @@ func YeuThichDacSan(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, true)
 }
 
-func BoYeuThichDacSan(c *gin.Context) {
+func BoYeuThichDacSanAPI(c *gin.Context) {
 	idDacSan, err := strconv.Atoi(c.Param("idDacSan"))
 	if err != nil {
 		fmt.Print(err.Error())
@@ -45,7 +45,7 @@ func BoYeuThichDacSan(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, true)
 }
 
-func DocYeuThichDacSan(c *gin.Context) {
+func DocYeuThichDacSanAPI(c *gin.Context) {
 	idDacSan, err := strconv.Atoi(c.Param("idDacSan"))
 	if err != nil {
 		fmt.Print(err.Error())

@@ -63,8 +63,8 @@ func DocDanhSachNguoiDung() ([]NguoiDung, error) {
 	return DocNguoiDung(db.Query("SELECT * FROM nguoi_dung ORDER BY id ASC"))
 }
 
-func TimKiemNguoiDung(soTrang int, doDaiTrang int, ten string) ([]NoiBan, error) {
-	return DocNoiBan(db.Query("SELECT * FROM nguoi_dung WHERE ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
+func TimKiemNguoiDung(soTrang int, doDaiTrang int, ten string) ([]NguoiDung, error) {
+	return DocNguoiDung(db.Query("SELECT * FROM nguoi_dung WHERE ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
 }
 
 func DocNguoiDungTheoId(id string) (NguoiDung, error) {

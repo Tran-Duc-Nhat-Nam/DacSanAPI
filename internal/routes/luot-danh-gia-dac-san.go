@@ -16,7 +16,7 @@ func TinhDiemDanhGiaDacSanTheoIdJson(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, models.TinhDiemDanhGiaDacSanCSDL(id))
 }
 
-func DanhGiaDacSanJson(c *gin.Context) {
+func DanhGiaDacSanAPI(c *gin.Context) {
 	var danhGia models.LuotDanhGiaDacSan
 
 	if err := c.BindJSON(&danhGia); err != nil {
@@ -32,7 +32,7 @@ func DanhGiaDacSanJson(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, true)
 }
 
-func DocDanhGiaDacSanTheoNguoiDungJson(c *gin.Context) {
+func DocDanhGiaDacSanTheoNguoiDungAPI(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("idDacSan"))
 	if err != nil {
 		fmt.Print(err.Error())
@@ -49,7 +49,7 @@ func DocDanhGiaDacSanTheoNguoiDungJson(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, diem)
 }
 
-func DocDanhGiaDacSanTheoDacSanJson(c *gin.Context) {
+func DocDanhSachDanhGiaDacSanAPI(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("idDacSan"))
 	if err != nil {
 		fmt.Print(err.Error())
