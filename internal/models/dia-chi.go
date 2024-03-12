@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"strconv"
 )
 
 type DiaChi struct {
@@ -15,7 +14,7 @@ type DiaChi struct {
 func DocDiaChiTheoIdCSDL(id int) (DiaChi, error) {
 	var diaChi DiaChi
 	var idPhuongXa int
-	row := db.QueryRow("SELECT * FROM dia_chi WHERE id = ?", strconv.Itoa(id))
+	row := db.QueryRow("SELECT * FROM dia_chi WHERE id = ?", id)
 	if err := row.Scan(&diaChi.ID, &diaChi.SoNha, &diaChi.TenDuong, &idPhuongXa); err != nil {
 		if err == sql.ErrNoRows {
 			return diaChi, err
@@ -29,7 +28,7 @@ func DocDiaChiTheoIdCSDL(id int) (DiaChi, error) {
 	return diaChi, nil
 }
 
-func TimDiaChiCSDL(diaChi DiaChi) (DiaChi, error) {
+func TimDiaChi(diaChi DiaChi) (DiaChi, error) {
 	row := db.QueryRow("SELECT id FROM dia_chi WHERE so_nha = ? AND ten_duong = ? AND phuong_xa = ?", diaChi.SoNha, diaChi.TenDuong, diaChi.PhuongXa.ID)
 	if err := row.Scan(&diaChi.ID); err != nil {
 		if err == sql.ErrNoRows {
@@ -40,14 +39,13 @@ func TimDiaChiCSDL(diaChi DiaChi) (DiaChi, error) {
 	return diaChi, nil
 }
 
-func ThemDiaChiCSDL(diaChi DiaChi) (DiaChi, error) {
-	id := TaoIdMoi("dia_chi")
-	diaChi.ID = id
-	_, err := db.Exec("INSERT INTO dia_chi VALUES (?, ?, ?, ?)", id, diaChi.SoNha, diaChi.TenDuong, diaChi.PhuongXa.ID)
+func ThemDiaChi(diaChi DiaChi) (DiaChi, error) {
+	diaChi.ID = TaoIdMoi("dia_chi")
+	_, err := db.Exec("INSERT INTO dia_chi VALUES (?, ?, ?, ?)", diaChi.ID, diaChi.SoNha, diaChi.TenDuong, diaChi.PhuongXa.ID)
 	return diaChi, err
 }
 
-func CapNhatDiaChiCSDL(diaChi DiaChi) error {
+func CapNhatDiaChi(diaChi DiaChi) error {
 	_, err := db.Exec("UPDATE dia_chi SET so_nha = ?, ten_duong = ?, phuong_xa = ? WHERE id = ?", diaChi.SoNha, diaChi.TenDuong, diaChi.PhuongXa.ID)
 	return err
 }

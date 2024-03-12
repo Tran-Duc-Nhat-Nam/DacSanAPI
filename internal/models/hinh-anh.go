@@ -1,7 +1,5 @@
 package models
 
-import "strconv"
-
 type HinhAnh struct {
 	ID   int    `json:"id"`
 	Ten  string `json:"ten"`
@@ -12,7 +10,7 @@ type HinhAnh struct {
 func DocHinhAnhTheoIdCSDL(id int) (HinhAnh, error) {
 	var hinhAhh HinhAnh
 
-	row := db.QueryRow("SELECT * FROM hinh_anh WHERE id = " + strconv.Itoa(id))
+	row := db.QueryRow("SELECT * FROM hinh_anh WHERE id = ?", id)
 
 	if err := row.Scan(&hinhAhh.ID, &hinhAhh.Ten, &hinhAhh.MoTa, &hinhAhh.URL); err != nil {
 		return hinhAhh, err
@@ -24,7 +22,7 @@ func DocHinhAnhTheoIdCSDL(id int) (HinhAnh, error) {
 func DocHinhAnhDacSanCSDL(id int) ([]HinhAnh, error) {
 	dsHinhAnh := []HinhAnh{}
 
-	rows, err := db.Query("SELECT * FROM hinh_anh_dac_san WHERE id_dac_san = " + strconv.Itoa(id))
+	rows, err := db.Query("SELECT * FROM hinh_anh_dac_san WHERE id_dac_san = ?", id)
 	if err != nil {
 		return dsHinhAnh, err
 	}
@@ -32,7 +30,8 @@ func DocHinhAnhDacSanCSDL(id int) ([]HinhAnh, error) {
 
 	for rows.Next() {
 		var idHinhAnh int
-		if err := rows.Scan(nil, &idHinhAnh); err != nil {
+		var idDacSan int
+		if err := rows.Scan(&idDacSan, &idHinhAnh); err != nil {
 			return nil, err
 		}
 		hinhAnh, err := DocHinhAnhTheoIdCSDL(idHinhAnh)
@@ -50,9 +49,8 @@ func DocHinhAnhDacSanCSDL(id int) ([]HinhAnh, error) {
 }
 
 func ThemHinhAnhCSDL(hinhAnh HinhAnh) error {
-	var count int
-	db.QueryRow("SELECT MAX(id) FROM hinh_anh").Scan(&count)
-	_, err := db.Exec("INSERT INTO hinh_anh VALUES (?, ?, ?, ?)", count, hinhAnh.Ten, hinhAnh.MoTa, hinhAnh.URL)
+	hinhAnh.ID = TaoIdMoi("hinh_anh")
+	_, err := db.Exec("INSERT INTO hinh_anh VALUES (?, ?, ?, ?)", hinhAnh.ID, hinhAnh.Ten, hinhAnh.MoTa, hinhAnh.URL)
 	return err
 }
 

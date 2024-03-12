@@ -9,24 +9,40 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DocNoiBanJson(c *gin.Context) {
-	dsNoiBan, _ := models.DocNoiBanCSDL()
+func DocNoiBanAPI(c *gin.Context) {
+	dsNoiBan, _ := models.DocDanhSachNoiBan()
 	c.IndentedJSON(http.StatusOK, dsNoiBan)
 }
 
-func DocNoiBanTheoIdJson(c *gin.Context) {
+func DocNoiBanTheoIdAPI(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+		return
 	}
-	dacSan, err := models.DocNoiBanTheoIdCSDL(id)
+	dacSan, err := models.DocNoiBanTheoId(id)
 	if err != nil {
 		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+		return
 	}
 	c.IndentedJSON(http.StatusOK, dacSan)
 }
 
-func ThemNoiBanJson(c *gin.Context) {
+func TimKiemNoiBanAPI(c *gin.Context) {
+	ten, soTrang, kichThuocTrang, err := docTuKhoaTimKiem(c)
+	if err == nil {
+		dacSan, err := models.TimKiemNoiBan(soTrang, kichThuocTrang, ten)
+		if err != nil {
+			fmt.Print(err.Error())
+			c.IndentedJSON(http.StatusConflict, err.Error())
+		}
+		c.IndentedJSON(http.StatusOK, dacSan)
+	}
+}
+
+func ThemNoiBanAPI(c *gin.Context) {
 	var noiBan models.NoiBan
 
 	if err := c.BindJSON(&noiBan); err != nil {
@@ -34,7 +50,7 @@ func ThemNoiBanJson(c *gin.Context) {
 		return
 	}
 
-	noiBan, err := models.ThemNoiBanCSDL(noiBan)
+	noiBan, err := models.ThemNoiBan(noiBan)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, noiBan)
@@ -43,7 +59,7 @@ func ThemNoiBanJson(c *gin.Context) {
 	}
 }
 
-func CapNhatNoiBanJson(c *gin.Context) {
+func CapNhatNoiBanAPI(c *gin.Context) {
 	var noiBan models.NoiBan
 
 	if err := c.BindJSON(&noiBan); err != nil {
@@ -51,7 +67,7 @@ func CapNhatNoiBanJson(c *gin.Context) {
 		return
 	}
 
-	err := models.CapNhatNoiBanCSDL(noiBan)
+	err := models.CapNhatNoiBan(noiBan)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, false)
@@ -60,7 +76,7 @@ func CapNhatNoiBanJson(c *gin.Context) {
 	}
 }
 
-func XoaNoiBanJson(c *gin.Context) {
+func XoaNoiBanAPI(c *gin.Context) {
 	var Doc map[string]int
 
 	if err := c.BindJSON(&Doc); err != nil {
@@ -68,7 +84,7 @@ func XoaNoiBanJson(c *gin.Context) {
 		return
 	}
 
-	err := models.XoaNoiBanCSDL(Doc["id"])
+	err := models.XoaNoiBan(Doc["id"])
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, false)

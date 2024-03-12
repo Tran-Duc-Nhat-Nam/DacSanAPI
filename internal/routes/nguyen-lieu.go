@@ -4,13 +4,34 @@ import (
 	"fmt"
 	"nam/dac_san_api/internal/models"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 func DocNguyenLieuJson(c *gin.Context) {
-	dsNguyenLieu, _ := models.DocNguyenLieuCSDL()
+	dsNguyenLieu, _ := models.DocDanhSachNguyenLieuCSDL()
 	c.IndentedJSON(http.StatusOK, dsNguyenLieu)
+}
+
+func DocNguyenLieuTheoTenJson(c *gin.Context) {
+	ten := c.Param("ten")
+	soTrang, err := strconv.Atoi(c.Param("index"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	kichThuocTrang, err := strconv.Atoi(c.Param("size"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	dacSan, err := models.DocNguyenLieuTheoTenCSDL(soTrang, kichThuocTrang, ten)
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	c.IndentedJSON(http.StatusOK, dacSan)
 }
 
 func ThemNguyenLieuJson(c *gin.Context) {

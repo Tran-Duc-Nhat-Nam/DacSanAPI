@@ -8,43 +8,56 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DocNguoiDungJson(c *gin.Context) {
-	nguoiDung, err := models.DocNguoiDungCSDL()
+func DocNguoiDungAPI(c *gin.Context) {
+	nguoiDung, err := models.DocDanhSachNguoiDung()
 	if err != nil {
 		fmt.Print(err.Error())
 	}
 	c.IndentedJSON(http.StatusOK, nguoiDung)
 }
 
-func DocNguoiDungTheoIdJson(c *gin.Context) {
+func DocNguoiDungTheoIdAPI(c *gin.Context) {
 	id := c.Param("id")
-	nguoiDung, err := models.DocNguoiDungTheoIdCSDL(id)
+	nguoiDung, err := models.DocNguoiDungTheoId(id)
 	if err != nil {
 		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, nil)
+		c.IndentedJSON(http.StatusConflict, err.Error())
+		return
 	}
 	c.IndentedJSON(http.StatusOK, nguoiDung)
 }
 
-func ThemNguoiDungJson(c *gin.Context) {
+func TimKiemNguoiDungAPI(c *gin.Context) {
+	ten, soTrang, kichThuocTrang, err := docTuKhoaTimKiem(c)
+	if err == nil {
+		dacSan, err := models.TimKiemNguoiDung(soTrang, kichThuocTrang, ten)
+		if err != nil {
+			fmt.Print(err.Error())
+			c.IndentedJSON(http.StatusConflict, err.Error())
+		}
+		c.IndentedJSON(http.StatusOK, dacSan)
+	}
+}
+
+func ThemNguoiDungAPI(c *gin.Context) {
 	var nguoiDung models.NguoiDung
 
 	if err := c.BindJSON(&nguoiDung); err != nil {
 		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, nil)
+		c.IndentedJSON(http.StatusConflict, err.Error())
 		return
 	}
 
-	nguoiDung, err := models.ThemNguoiDungCSDL(nguoiDung)
+	nguoiDung, err := models.ThemNguoiDung(nguoiDung)
 	if err != nil {
 		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, nil)
+		c.IndentedJSON(http.StatusConflict, nguoiDung)
 	} else {
 		c.IndentedJSON(http.StatusCreated, nguoiDung)
 	}
 }
 
-func CapNhatNguoiDungJson(c *gin.Context) {
+func CapNhatNguoiDungAPI(c *gin.Context) {
 	var nguoiDung models.NguoiDung
 
 	if err := c.BindJSON(&nguoiDung); err != nil {
@@ -52,7 +65,7 @@ func CapNhatNguoiDungJson(c *gin.Context) {
 		return
 	}
 
-	err := models.CapNhatNguoiDungCSDL(nguoiDung)
+	err := models.CapNhatNguoiDung(nguoiDung)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, false)
@@ -61,15 +74,16 @@ func CapNhatNguoiDungJson(c *gin.Context) {
 	}
 }
 
-func XoaNguoiDungJson(c *gin.Context) {
+func XoaNguoiDungAPI(c *gin.Context) {
 	var Doc map[string]int
 
 	if err := c.BindJSON(&Doc); err != nil {
 		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, false)
 		return
 	}
 
-	err := models.XoaNguoiDungCSDL(Doc["id"])
+	err := models.XoaNguoiDung(Doc["id"])
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, false)

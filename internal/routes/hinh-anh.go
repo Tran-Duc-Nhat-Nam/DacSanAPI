@@ -20,3 +20,15 @@ func DocHinhAnhTheoIdJson(c *gin.Context) {
 	}
 	c.IndentedJSON(http.StatusOK, hinhAnh)
 }
+
+func DocHinhAnhDacSanJson(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	hinhAnh, err := models.DocHinhAnhDacSanCSDL(id)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	c.IndentedJSON(http.StatusOK, hinhAnh)
+}

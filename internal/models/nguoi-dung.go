@@ -19,18 +19,19 @@ type NguoiDung struct {
 	LichSuDanhGiaNoiBan []LuotDanhGiaNoiBan `json:"lich_su_danh_gia_san"`
 }
 
-func DocNguoiDungCSDL() ([]NguoiDung, error) {
+func DocNguoiDung(rows *sql.Rows, err error) ([]NguoiDung, error) {
 	dsNguoiDung := []NguoiDung{}
 
-	row, err := db.Query("SELECT * FROM nguoi_dung ORDER BY id ASC")
 	if err != nil {
 		return dsNguoiDung, err
 	}
-	for row.Next() {
+
+	defer rows.Close()
+
+	for rows.Next() {
 		var nguoiDung NguoiDung
 		var idDiaChi int
-		// var ngaySinh time.Time
-		if err := row.Scan(&nguoiDung.ID, &nguoiDung.Email, &nguoiDung.Ten, &nguoiDung.IsNam, &nguoiDung.NgaySinh, &idDiaChi, &nguoiDung.SoDienThoai); err != nil {
+		if err := rows.Scan(&nguoiDung.ID, &nguoiDung.Email, &nguoiDung.Ten, &nguoiDung.IsNam, &nguoiDung.NgaySinh, &idDiaChi, &nguoiDung.SoDienThoai); err != nil {
 			return dsNguoiDung, err
 		}
 		lichSuXemDacSan, err := DocLichSuXemDacSanCSDL(nguoiDung.ID)
@@ -53,16 +54,22 @@ func DocNguoiDungCSDL() ([]NguoiDung, error) {
 		if err == nil {
 			nguoiDung.DiaChi = diaChi
 		}
-		// nguoiDung.NgaySinh = ngaySinh.UnixMilli()
 		dsNguoiDung = append(dsNguoiDung, nguoiDung)
 	}
 	return dsNguoiDung, nil
 }
 
-func DocNguoiDungTheoIdCSDL(id string) (NguoiDung, error) {
+func DocDanhSachNguoiDung() ([]NguoiDung, error) {
+	return DocNguoiDung(db.Query("SELECT * FROM nguoi_dung ORDER BY id ASC"))
+}
+
+func TimKiemNguoiDung(soTrang int, doDaiTrang int, ten string) ([]NoiBan, error) {
+	return DocNoiBan(db.Query("SELECT * FROM nguoi_dung WHERE ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
+}
+
+func DocNguoiDungTheoId(id string) (NguoiDung, error) {
 	var nguoiDung NguoiDung
 	var idDiaChi int
-	// var ngaySinh time.Time
 
 	row := db.QueryRow("SELECT * FROM nguoi_dung WHERE id = ?", id)
 	if err := row.Scan(&nguoiDung.ID, &nguoiDung.Email, &nguoiDung.Ten, &nguoiDung.IsNam, &nguoiDung.NgaySinh, &idDiaChi, &nguoiDung.SoDienThoai); err != nil {
@@ -94,10 +101,10 @@ func DocNguoiDungTheoIdCSDL(id string) (NguoiDung, error) {
 	return nguoiDung, nil
 }
 
-func ThemNguoiDungCSDL(nguoiDung NguoiDung) (NguoiDung, error) {
-	diaChi, err := TimDiaChiCSDL(nguoiDung.DiaChi)
+func ThemNguoiDung(nguoiDung NguoiDung) (NguoiDung, error) {
+	diaChi, err := TimDiaChi(nguoiDung.DiaChi)
 	if err != nil {
-		nguoiDung.DiaChi, err = ThemDiaChiCSDL(nguoiDung.DiaChi)
+		nguoiDung.DiaChi, err = ThemDiaChi(nguoiDung.DiaChi)
 	} else {
 		nguoiDung.DiaChi = diaChi
 	}
@@ -105,13 +112,13 @@ func ThemNguoiDungCSDL(nguoiDung NguoiDung) (NguoiDung, error) {
 	return nguoiDung, err
 }
 
-func CapNhatNguoiDungCSDL(nguoiDung NguoiDung) error {
-	CapNhatDiaChiCSDL(nguoiDung.DiaChi)
+func CapNhatNguoiDung(nguoiDung NguoiDung) error {
+	CapNhatDiaChi(nguoiDung.DiaChi)
 	_, err := db.Exec("UPDATE nguoi_dung SET ten = ?, is_nam = ?, ngay_sinh = ?, dia_chi = ?, so_dien_thoai = ? WHERE id = ?", nguoiDung.Ten, nguoiDung.IsNam, nguoiDung.NgaySinh, nguoiDung.DiaChi.ID, nguoiDung.SoDienThoai, nguoiDung.ID)
 	return err
 }
 
-func XoaNguoiDungCSDL(id int) error {
+func XoaNguoiDung(id int) error {
 	_, err := db.Exec("DELETE FROM nguoi_dung WHERE id = ?", id)
 	return err
 }

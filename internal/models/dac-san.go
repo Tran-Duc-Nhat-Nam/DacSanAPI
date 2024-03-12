@@ -22,7 +22,7 @@ type DacSan struct {
 	HinhAnh     []HinhAnh   `json:"hinh_anh"`
 }
 
-func DocDacSanCSDL(rows *sql.Rows, err error) ([]DacSan, error) {
+func DocDacSan(rows *sql.Rows, err error) ([]DacSan, error) {
 	dsDacSan := []DacSan{}
 
 	if err != nil {
@@ -77,39 +77,31 @@ func DocDacSanCSDL(rows *sql.Rows, err error) ([]DacSan, error) {
 	return dsDacSan, nil
 }
 
-func DocDanhSachDacSanCSDL() ([]DacSan, error) {
-	return DocDacSanCSDL(db.Query("SELECT * FROM dac_san ORDER BY id ASC"))
+func DocDanhSachDacSan() ([]DacSan, error) {
+	return DocDacSan(db.Query("SELECT * FROM dac_san ORDER BY id ASC"))
 }
 
-func DocTrangDacSanCSDL(soTrang int, doDaiTrang int) ([]DacSan, error) {
-	return DocDacSanCSDL(db.Query("SELECT * FROM dac_san ORDER BY id ASC LIMIT ?, ?", soTrang*doDaiTrang, doDaiTrang))
+func DocDanhSachDacSanTheoTrang(soTrang int, doDaiTrang int) ([]DacSan, error) {
+	return DocDacSan(db.Query("SELECT * FROM dac_san ORDER BY id ASC LIMIT ?, ?", soTrang*doDaiTrang, doDaiTrang))
 }
 
-func DocTrangDacSanTheoTenCSDL(soTrang int, doDaiTrang int, ten string) ([]DacSan, error) {
-	return DocDacSanCSDL(db.Query("SELECT * FROM dac_san WHERE ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
+func TimKiemDacSan(soTrang int, doDaiTrang int, ten string) ([]DacSan, error) {
+	return DocDacSan(db.Query("SELECT * FROM dac_san WHERE ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
 }
 
-func DocTrangDacSanTheoVungMienCSDL(soTrang int, doDaiTrang int, id int) ([]DacSan, error) {
-	return DocDacSanCSDL(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, dac_san_thuoc_vung WHERE id = id_dac_san AND id_vung_mien = ? ORDER BY id ASC LIMIT ?, ?", id, soTrang*doDaiTrang, doDaiTrang))
+func TimKiemDacSanTheoVungMien(soTrang int, doDaiTrang int, id int) ([]DacSan, error) {
+	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, dac_san_thuoc_vung WHERE id = id_dac_san AND id_vung_mien = ? ORDER BY id ASC LIMIT ?, ?", id, soTrang*doDaiTrang, doDaiTrang))
 }
 
-func DocTrangDacSanTheoNguyenLieuCSDL(soTrang int, doDaiTrang int, id int) ([]DacSan, error) {
-	return DocDacSanCSDL(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, thanh_phan WHERE id = id_dac_san AND id_nguyen_lieu = ? ORDER BY id ASC LIMIT ?, ?", id, soTrang*doDaiTrang, doDaiTrang))
+func TimKiemDacSanTheoNguyenLieu(soTrang int, doDaiTrang int, id int) ([]DacSan, error) {
+	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, thanh_phan WHERE id = id_dac_san AND id_nguyen_lieu = ? ORDER BY id ASC LIMIT ?, ?", id, soTrang*doDaiTrang, doDaiTrang))
 }
 
-func DocTrangDacSanTheoMuaDacSanCSDL(soTrang int, doDaiTrang int, id int) ([]DacSan, error) {
-	return DocDacSanCSDL(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, dac_san_theo_mua WHERE id = id_dac_san AND id_mua_dac_san = ? ORDER BY id ASC LIMIT ?, ?", id, soTrang*doDaiTrang, doDaiTrang))
+func TimKiemDacSanTheoMua(soTrang int, doDaiTrang int, id int) ([]DacSan, error) {
+	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, dac_san_theo_mua WHERE id = id_dac_san AND id_mua_dac_san = ? ORDER BY id ASC LIMIT ?, ?", id, soTrang*doDaiTrang, doDaiTrang))
 }
 
-func DocTrangDacSanTheoDieuKienCSDL(soTrang int, doDaiTrang int, idVungMien int, idMuaDacSan int, idNguyenLieu int, ten string) ([]DacSan, error) {
-	return DocDacSanCSDL(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, dac_san_thuoc_vung, dac_san_theo_mua, thanh_phan WHERE id = id_dac_san AND id_vung_mien = ? AND id_mua_dac_san = ? AND id_nguyen_lieu = ? AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", idVungMien, idMuaDacSan, idNguyenLieu, "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
-}
-
-func DocTrangDacSanTheoTenVaVungMien(soTrang int, doDaiTrang int, ten string, id int) ([]DacSan, error) {
-	return DocDacSanCSDL(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, dac_san_thuoc_vung WHERE id = id_dac_san AND id_vung_mien = ? AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", id, "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
-}
-
-func DocTrangDacSanTheoTenVaDanhSachVungMien(soTrang int, doDaiTrang int, ten string, dsID []int) ([]DacSan, error) {
+func TimKiemDacSanTheoDanhSachVungMien(soTrang int, doDaiTrang int, ten string, dsID []int) ([]DacSan, error) {
 	var argString string
 	for i, id := range dsID {
 		if i == 0 {
@@ -118,14 +110,10 @@ func DocTrangDacSanTheoTenVaDanhSachVungMien(soTrang int, doDaiTrang int, ten st
 			argString += (", " + strconv.Itoa(id))
 		}
 	}
-	return DocDacSanCSDL(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, dac_san_thuoc_vung WHERE id = id_dac_san AND id_vung_mien in ("+argString+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
+	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, dac_san_thuoc_vung WHERE id = id_dac_san AND id_vung_mien in ("+argString+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
 }
 
-func DocTrangDacSanTheoTenVaMua(soTrang int, doDaiTrang int, ten string, id int) ([]DacSan, error) {
-	return DocDacSanCSDL(db.Query("SELECT * FROM dac_san, dac_san_theo_mua WHERE id = id_dac_san AND id_mua_dac_san = ? AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", id, "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
-}
-
-func DocTrangDacSanTheoTenVaDanhSachMua(soTrang int, doDaiTrang int, ten string, dsID []int) ([]DacSan, error) {
+func TimKiemDacSanTheoDanhSachMua(soTrang int, doDaiTrang int, ten string, dsID []int) ([]DacSan, error) {
 	var argString string
 	for i, id := range dsID {
 		if i == 0 {
@@ -134,10 +122,10 @@ func DocTrangDacSanTheoTenVaDanhSachMua(soTrang int, doDaiTrang int, ten string,
 			argString += (", " + strconv.Itoa(id))
 		}
 	}
-	return DocDacSanCSDL(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, dac_san_theo_mua WHERE id = id_dac_san AND id_mua_dac_san in ("+argString+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
+	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, dac_san_theo_mua WHERE id = id_dac_san AND id_mua_dac_san in ("+argString+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
 }
 
-func DocTrangDacSanTheoTenVaThoiKhong(soTrang int, doDaiTrang int, dsVungMien []int, dsMuaDacSan []int, ten string) ([]DacSan, error) {
+func TimKiemDacSanTheoMuaVungMien(soTrang int, doDaiTrang int, dsVungMien []int, dsMuaDacSan []int, ten string) ([]DacSan, error) {
 	var argStringVM string
 	for i, id := range dsVungMien {
 		if i == 0 {
@@ -154,7 +142,87 @@ func DocTrangDacSanTheoTenVaThoiKhong(soTrang int, doDaiTrang int, dsVungMien []
 			argStringMDS += (", " + strconv.Itoa(id))
 		}
 	}
-	return DocDacSanCSDL(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, dac_san_thuoc_vung, dac_san_theo_mua WHERE id = id_dac_san AND id_vung_mien in ("+argStringVM+") AND id_mua_dac_san in ("+argStringMDS+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
+	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, dac_san_thuoc_vung, dac_san_theo_mua WHERE id = id_dac_san AND id_vung_mien in ("+argStringVM+") AND id_mua_dac_san in ("+argStringMDS+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
+}
+
+func TimKiemDacSanTheoDanhSachNguyenLieu(soTrang int, doDaiTrang int, ten string, dsID []int) ([]DacSan, error) {
+	var argString string
+	for i, id := range dsID {
+		if i == 0 {
+			argString += strconv.Itoa(id)
+		} else {
+			argString += (", " + strconv.Itoa(id))
+		}
+	}
+	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, thanh_phan WHERE id = id_dac_san AND id_nguyen_lieu in ("+argString+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
+}
+
+func TimKiemDacSanTheoNguyenLieuVungMien(soTrang int, doDaiTrang int, dsNguyenLieu []int, dsMuaDacSan []int, ten string) ([]DacSan, error) {
+	var argStringNL string
+	for i, id := range dsNguyenLieu {
+		if i == 0 {
+			argStringNL += strconv.Itoa(id)
+		} else {
+			argStringNL += (", " + strconv.Itoa(id))
+		}
+	}
+	var argStringVM string
+	for i, id := range dsMuaDacSan {
+		if i == 0 {
+			argStringVM += strconv.Itoa(id)
+		} else {
+			argStringVM += (", " + strconv.Itoa(id))
+		}
+	}
+	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, thanh_phan, dac_san_thuoc_vung WHERE id = id_dac_san AND id_nguyen_lieu in ("+argStringNL+") AND id_vung_mien in ("+argStringVM+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
+}
+
+func TimKiemDacSanTheoNguyenLieuMua(soTrang int, doDaiTrang int, dsNguyenLieu []int, dsVungMien []int, ten string) ([]DacSan, error) {
+	var argStringNL string
+	for i, id := range dsNguyenLieu {
+		if i == 0 {
+			argStringNL += strconv.Itoa(id)
+		} else {
+			argStringNL += (", " + strconv.Itoa(id))
+		}
+	}
+	var argStringMDS string
+	for i, id := range dsVungMien {
+		if i == 0 {
+			argStringMDS += strconv.Itoa(id)
+		} else {
+			argStringMDS += (", " + strconv.Itoa(id))
+		}
+	}
+	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, thanh_phan, dac_san_theo_mua WHERE id = id_dac_san AND id_nguyen_lieu in ("+argStringNL+") AND id_mua_dac_san in ("+argStringMDS+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
+}
+
+func TimKiemDacSanTheoDieuKien(soTrang int, doDaiTrang int, dsNguyenLieu []int, dsVungMien []int, dsMuaDacSan []int, ten string) ([]DacSan, error) {
+	var argStringNL string
+	for i, id := range dsNguyenLieu {
+		if i == 0 {
+			argStringNL += strconv.Itoa(id)
+		} else {
+			argStringNL += (", " + strconv.Itoa(id))
+		}
+	}
+	var argStringMDS string
+	for i, id := range dsVungMien {
+		if i == 0 {
+			argStringMDS += strconv.Itoa(id)
+		} else {
+			argStringMDS += (", " + strconv.Itoa(id))
+		}
+	}
+	var argStringVM string
+	for i, id := range dsMuaDacSan {
+		if i == 0 {
+			argStringVM += strconv.Itoa(id)
+		} else {
+			argStringVM += (", " + strconv.Itoa(id))
+		}
+	}
+	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, thanh_phan, dac_san_thuoc_vung, dac_san_theo_mua WHERE id = id_dac_san AND id_nguyen_lieu in ("+argStringNL+") AND id_vung_mien in ("+argStringVM+") AND id_mua_dac_san in ("+argStringMDS+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
 }
 
 func DocDacSanTheoIdCSDL(id int) (DacSan, error) {
@@ -241,30 +309,7 @@ func DocDacSanTheoCachCheBienCSDL(text string) ([]DacSan, error) {
 }
 
 func DocLike(text string, cot string, bang string, timTheoID func(int) (DacSan, error)) ([]DacSan, error) {
-	dsDacSan := []DacSan{}
-
-	rows, err := db.Query("SELECT id FROM "+bang+" WHERE "+cot+" LIKE ? ORDER BY id ASC", "%"+text+"%")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var idDacSan int
-		if err := rows.Scan(&idDacSan); err != nil {
-			return nil, err
-		}
-		dacSan, err := timTheoID(idDacSan)
-		if err == nil {
-			dsDacSan = append(dsDacSan, dacSan)
-		}
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return dsDacSan, nil
+	return DocDacSan(db.Query("SELECT id FROM "+bang+" WHERE "+cot+" LIKE ? ORDER BY id ASC", "%"+text+"%"))
 }
 
 func ThemDacSanCSDL(dacSan DacSan) (DacSan, error) {

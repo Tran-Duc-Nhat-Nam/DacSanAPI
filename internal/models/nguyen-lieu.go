@@ -1,19 +1,22 @@
 package models
 
-import "strconv"
+import (
+	"database/sql"
+	"strconv"
+)
 
 type NguyenLieu struct {
 	ID  int    `json:"id"`
 	Ten string `json:"ten"`
 }
 
-func DocNguyenLieuCSDL() ([]NguyenLieu, error) {
+func DocNguyenLieuCSDL(rows *sql.Rows, err error) ([]NguyenLieu, error) {
 	dsNguyenLieu := []NguyenLieu{}
 
-	rows, err := db.Query("SELECT * FROM nguyen_lieu ORDER BY id ASC")
 	if err != nil {
 		return dsNguyenLieu, err
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {
@@ -43,40 +46,21 @@ func DocNguyenLieuTheoIdCSDL(id int) (NguyenLieu, error) {
 	return nguyenLieu, nil
 }
 
+func DocDanhSachNguyenLieuCSDL() ([]NguyenLieu, error) {
+	return DocNguyenLieuCSDL(db.Query("SELECT * FROM nguyen_lieu ORDER BY id ASC"))
+}
+
 func DocNguyenLieuThanhPhanCSDL(id int) ([]NguyenLieu, error) {
-	dsNguyenLieu := []NguyenLieu{}
+	return DocNguyenLieuCSDL(db.Query("SELECT * FROM thanh_phan WHERE id_dac_san = ? ORDER BY id ASC", id))
+}
 
-	rows, err := db.Query("SELECT * FROM thanh_phan WHERE id_dac_san = ?", id)
-	if err != nil {
-		return dsNguyenLieu, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var idNguyenLieu int
-		if err := rows.Scan(&id, &idNguyenLieu); err != nil {
-			return dsNguyenLieu, err
-		}
-		nguyenLieu, err := DocNguyenLieuTheoIdCSDL(idNguyenLieu)
-		if err != nil {
-			return dsNguyenLieu, err
-		}
-		dsNguyenLieu = append(dsNguyenLieu, nguyenLieu)
-	}
-
-	if err := rows.Err(); err != nil {
-		return dsNguyenLieu, err
-	}
-
-	return dsNguyenLieu, nil
+func DocNguyenLieuTheoTenCSDL(soTrang int, doDaiTrang int, ten string) ([]NguyenLieu, error) {
+	return DocNguyenLieuCSDL(db.Query("SELECT * FROM nguyen_lieu WHERE ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
 }
 
 func ThemNguyenLieuCSDL(nguyenLieu NguyenLieu) (NguyenLieu, error) {
-	var count int
-	db.QueryRow("SELECT MAX(id) FROM nguyen_lieu").Scan(&count)
-	count++
-	_, err := db.Exec("INSERT INTO nguyen_lieu VALUES (?, ?)", count, nguyenLieu.Ten)
-	nguyenLieu.ID = count
+	nguyenLieu.ID = TaoIdMoi("nguyen_lieu")
+	_, err := db.Exec("INSERT INTO nguyen_lieu VALUES (?, ?)", nguyenLieu.ID, nguyenLieu.Ten)
 	return nguyenLieu, err
 }
 

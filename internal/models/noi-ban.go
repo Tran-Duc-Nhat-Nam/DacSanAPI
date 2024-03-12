@@ -13,18 +13,18 @@ type NoiBan struct {
 	LuotDanhGia int     `json:"luot_danh_gia"`
 }
 
-func DocNoiBanCSDL() ([]NoiBan, error) {
+func DocNoiBan(rows *sql.Rows, err error) ([]NoiBan, error) {
 	dsNoiBan := []NoiBan{}
-	var diaChiId int
 
-	rows, err := db.Query("SELECT * FROM noi_ban ORDER BY id ASC")
 	if err != nil {
 		return nil, err
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {
 		var noiBan NoiBan
+		var diaChiId int
 		if err := rows.Scan(&noiBan.ID, &noiBan.Ten, &noiBan.MoTa, &diaChiId, &noiBan.LuotXem, &noiBan.DiemDanhGia, &noiBan.LuotDanhGia); err != nil {
 			return nil, err
 		}
@@ -46,7 +46,15 @@ func DocNoiBanCSDL() ([]NoiBan, error) {
 	return dsNoiBan, nil
 }
 
-func DocNoiBanTheoIdCSDL(id int) (NoiBan, error) {
+func DocDanhSachNoiBan() ([]NoiBan, error) {
+	return DocNoiBan(db.Query("SELECT * FROM noi_ban ORDER BY id ASC"))
+}
+
+func TimKiemNoiBan(soTrang int, doDaiTrang int, ten string) ([]NoiBan, error) {
+	return DocNoiBan(db.Query("SELECT * FROM noi_ban WHERE ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
+}
+
+func DocNoiBanTheoId(id int) (NoiBan, error) {
 	var noiBan NoiBan
 	var idDiaChi int
 
@@ -68,10 +76,10 @@ func DocNoiBanTheoIdCSDL(id int) (NoiBan, error) {
 	return noiBan, nil
 }
 
-func ThemNoiBanCSDL(noiBan NoiBan) (NoiBan, error) {
-	diaChi, err := TimDiaChiCSDL(noiBan.DiaChi)
+func ThemNoiBan(noiBan NoiBan) (NoiBan, error) {
+	diaChi, err := TimDiaChi(noiBan.DiaChi)
 	if err != nil {
-		diaChi, err = ThemDiaChiCSDL(noiBan.DiaChi)
+		diaChi, err = ThemDiaChi(noiBan.DiaChi)
 	} else {
 		noiBan.DiaChi = diaChi
 	}
@@ -88,8 +96,8 @@ func ThemNoiBanCSDL(noiBan NoiBan) (NoiBan, error) {
 	return noiBan, err
 }
 
-func CapNhatNoiBanCSDL(noiBan NoiBan) error {
-	err := CapNhatDiaChiCSDL(noiBan.DiaChi)
+func CapNhatNoiBan(noiBan NoiBan) error {
+	err := CapNhatDiaChi(noiBan.DiaChi)
 	if err != nil {
 		return err
 	}
@@ -107,7 +115,7 @@ func CapNhatNoiBanCSDL(noiBan NoiBan) error {
 	return err
 }
 
-func XoaNoiBanCSDL(id int) error {
+func XoaNoiBan(id int) error {
 	_, err := db.Exec("DELETE FROM noi_ban WHERE id = ?", id)
 	return err
 }

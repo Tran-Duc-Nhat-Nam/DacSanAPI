@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"strconv"
 	"time"
 )
@@ -24,8 +25,12 @@ func DocLichSuDanhGiaDacSanCSDL(idNguoiDung string) ([]LuotDanhGiaDacSan, error)
 
 	for rows.Next() {
 		var luotDanhGia LuotDanhGiaDacSan
-		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdDacSan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia, &luotDanhGia.NoiDung); err != nil {
+		var temp sql.NullString
+		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdDacSan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia, &temp); err != nil {
 			return nil, err
+		}
+		if temp.Valid {
+			luotDanhGia.NoiDung = temp.String
 		}
 		lichSuDanhGia = append(lichSuDanhGia, luotDanhGia)
 	}
@@ -48,8 +53,12 @@ func DocDanhGiaDacSanCSDL(idDacSan int) ([]LuotDanhGiaDacSan, error) {
 
 	for rows.Next() {
 		var luotDanhGia LuotDanhGiaDacSan
-		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdDacSan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia, &luotDanhGia.NoiDung); err != nil {
+		var temp sql.NullString
+		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdDacSan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia, &temp); err != nil {
 			return nil, err
+		}
+		if temp.Valid {
+			luotDanhGia.NoiDung = temp.String
 		}
 		lichSuDanhGia = append(lichSuDanhGia, luotDanhGia)
 	}
@@ -62,15 +71,19 @@ func DocDanhGiaDacSanCSDL(idDacSan int) ([]LuotDanhGiaDacSan, error) {
 }
 
 func DocDacSanTheoNguoiDungCSDL(idDacSan int, idNguoiDung string) (LuotDanhGiaDacSan, error) {
-	var danhGia LuotDanhGiaDacSan
+	var luotDanhGia LuotDanhGiaDacSan
 
 	rows := db.QueryRow("SELECT * FROM luot_danh_gia_dac_san WHERE id_dac_san = ? AND id_nguoi_dung = ?", idDacSan, idNguoiDung)
 
-	if err := rows.Scan(&danhGia.IdNguoiDung, &danhGia.IdDacSan, &danhGia.ThoiGianDanhGia, &danhGia.DiemDanhGia, &danhGia.NoiDung); err != nil {
-		return danhGia, err
+	var temp sql.NullString
+	if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdDacSan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia, &temp); err != nil {
+		return luotDanhGia, err
+	}
+	if temp.Valid {
+		luotDanhGia.NoiDung = temp.String
 	}
 
-	return danhGia, nil
+	return luotDanhGia, nil
 }
 
 func TinhDiemDanhGiaDacSanCSDL(idDacSan int) float64 {
@@ -85,8 +98,12 @@ func TinhDiemDanhGiaDacSanCSDL(idDacSan int) float64 {
 
 	for rows.Next() {
 		var luotDanhGia LuotDanhGiaDacSan
-		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdDacSan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia, &luotDanhGia.NoiDung); err != nil {
+		var temp sql.NullString
+		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdDacSan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia, &temp); err != nil {
 			return -1
+		}
+		if temp.Valid {
+			luotDanhGia.NoiDung = temp.String
 		}
 		lichSuDanhGia = append(lichSuDanhGia, luotDanhGia)
 		tongDiem += float64(luotDanhGia.DiemDanhGia)
