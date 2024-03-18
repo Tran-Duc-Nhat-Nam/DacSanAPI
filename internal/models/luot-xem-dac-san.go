@@ -34,7 +34,12 @@ func DocLichSuXemDacSanCSDL(idNguoiDung string) ([]LuotXemDacSan, error) {
 	return lichSuXem, nil
 }
 
-func ThemLuotXemDacSanCSDL(luotXem LuotXemDacSan) error {
+func ThemLuotXemDacSan(luotXem LuotXemDacSan) error {
 	_, err := db.Exec("INSERT INTO luot_xem_dac_san VALUES (?, ?, ?)", luotXem.IdNguoiDung, luotXem.IdDacSan, time.Now())
+	return err
+}
+
+func ThemLuotXemDacSanKhach(id int) error {
+	_, err := db.Exec("CALL watch(?)", id)
 	return err
 }

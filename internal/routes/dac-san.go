@@ -2,12 +2,11 @@ package routes
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"nam/dac_san_api/internal/models"
 	"net/http"
 	"strconv"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 func DocDacSanJson(c *gin.Context) {
@@ -134,7 +133,40 @@ func DocDacSanTheoIdJson(c *gin.Context) {
 	if err != nil {
 		fmt.Print(err.Error())
 	}
-	dacSan, err := models.DocDacSanTheoIdCSDL(id)
+	dacSan, err := models.DocDacSanTheoId(id)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	c.IndentedJSON(http.StatusOK, dacSan)
+}
+
+func XemDacSan(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	idNguoiDung := c.Param("idnguoidung")
+	dacSan, err := models.DocDacSanTheoId(id)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	err = models.ThemLuotXemDacSan(models.LuotXemDacSan{IdNguoiDung: idNguoiDung, IdDacSan: id, ThoiGianXem: time.Now()})
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	c.IndentedJSON(http.StatusOK, dacSan)
+}
+
+func XemDacSanKhach(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	dacSan, err := models.DocDacSanTheoId(id)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	err = models.ThemLuotXemDacSanKhach(id)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
@@ -194,23 +226,14 @@ func TimKiemDacSanTheoDanhSachVungMienAPI(c *gin.Context) {
 		dsID = append(dsID, id)
 	}
 
-	ten := c.Param("ten")
-	soTrang, err := strconv.Atoi(c.Param("index"))
-	if err != nil {
-		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, err.Error())
+	ten, soTrang, kichThuocTrang, err := docTuKhoaTimKiem(c)
+	if err == nil {
+		dacSan, err := models.TimKiemDacSanTheoDanhSachVungMien(soTrang, kichThuocTrang, ten, dsID)
+		if err != nil {
+			fmt.Print(err.Error())
+		}
+		c.IndentedJSON(http.StatusOK, dacSan)
 	}
-	kichThuocTrang, err := strconv.Atoi(c.Param("size"))
-	if err != nil {
-		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, err.Error())
-	}
-
-	dacSan, err := models.TimKiemDacSanTheoDanhSachVungMien(soTrang, kichThuocTrang, ten, dsID)
-	if err != nil {
-		fmt.Print(err.Error())
-	}
-	c.IndentedJSON(http.StatusOK, dacSan)
 }
 
 func TimKiemDacSanTheoDanhSachMuaAPI(c *gin.Context) {
@@ -227,23 +250,14 @@ func TimKiemDacSanTheoDanhSachMuaAPI(c *gin.Context) {
 		dsID = append(dsID, id)
 	}
 
-	ten := c.Param("ten")
-	soTrang, err := strconv.Atoi(c.Param("index"))
-	if err != nil {
-		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, err.Error())
+	ten, soTrang, kichThuocTrang, err := docTuKhoaTimKiem(c)
+	if err == nil {
+		dacSan, err := models.TimKiemDacSanTheoDanhSachMua(soTrang, kichThuocTrang, ten, dsID)
+		if err != nil {
+			fmt.Print(err.Error())
+		}
+		c.IndentedJSON(http.StatusOK, dacSan)
 	}
-	kichThuocTrang, err := strconv.Atoi(c.Param("size"))
-	if err != nil {
-		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, err.Error())
-	}
-
-	dacSan, err := models.TimKiemDacSanTheoDanhSachMua(soTrang, kichThuocTrang, ten, dsID)
-	if err != nil {
-		fmt.Print(err.Error())
-	}
-	c.IndentedJSON(http.StatusOK, dacSan)
 }
 
 func TimKiemDacSanTheoMuaVungMienAPI(c *gin.Context) {
@@ -298,23 +312,14 @@ func TimKiemDacSanTheoDanhSachNguyenLieuAPI(c *gin.Context) {
 		dsID = append(dsID, id)
 	}
 
-	ten := c.Param("ten")
-	soTrang, err := strconv.Atoi(c.Param("index"))
-	if err != nil {
-		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, err.Error())
+	ten, soTrang, kichThuocTrang, err := docTuKhoaTimKiem(c)
+	if err == nil {
+		dacSan, err := models.TimKiemDacSanTheoDanhSachNguyenLieu(soTrang, kichThuocTrang, ten, dsID)
+		if err != nil {
+			fmt.Print(err.Error())
+		}
+		c.IndentedJSON(http.StatusOK, dacSan)
 	}
-	kichThuocTrang, err := strconv.Atoi(c.Param("size"))
-	if err != nil {
-		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, err.Error())
-	}
-
-	dacSan, err := models.TimKiemDacSanTheoDanhSachNguyenLieu(soTrang, kichThuocTrang, ten, dsID)
-	if err != nil {
-		fmt.Print(err.Error())
-	}
-	c.IndentedJSON(http.StatusOK, dacSan)
 }
 
 func TimKiemDacSanTheoNguyenLieuVungMienAPI(c *gin.Context) {
@@ -336,23 +341,14 @@ func TimKiemDacSanTheoNguyenLieuVungMienAPI(c *gin.Context) {
 		dsVungMien = append(dsVungMien, id)
 	}
 
-	ten := c.Param("ten")
-	soTrang, err := strconv.Atoi(c.Param("index"))
-	if err != nil {
-		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, err.Error())
+	ten, soTrang, kichThuocTrang, err := docTuKhoaTimKiem(c)
+	if err == nil {
+		dacSan, err := models.TimKiemDacSanTheoNguyenLieuVungMien(soTrang, kichThuocTrang, dsNguyenLieu, dsVungMien, ten)
+		if err != nil {
+			fmt.Print(err.Error())
+		}
+		c.IndentedJSON(http.StatusOK, dacSan)
 	}
-	kichThuocTrang, err := strconv.Atoi(c.Param("size"))
-	if err != nil {
-		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, err.Error())
-	}
-
-	dacSan, err := models.TimKiemDacSanTheoNguyenLieuVungMien(soTrang, kichThuocTrang, dsNguyenLieu, dsVungMien, ten)
-	if err != nil {
-		fmt.Print(err.Error())
-	}
-	c.IndentedJSON(http.StatusOK, dacSan)
 }
 
 func TimKiemDacSanTheoNguyenLieuMuaAPI(c *gin.Context) {
@@ -374,23 +370,14 @@ func TimKiemDacSanTheoNguyenLieuMuaAPI(c *gin.Context) {
 		dsMuaDacSan = append(dsMuaDacSan, id)
 	}
 
-	ten := c.Param("ten")
-	soTrang, err := strconv.Atoi(c.Param("index"))
-	if err != nil {
-		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, err.Error())
+	ten, soTrang, kichThuocTrang, err := docTuKhoaTimKiem(c)
+	if err == nil {
+		dacSan, err := models.TimKiemDacSanTheoNguyenLieuMua(soTrang, kichThuocTrang, dsNguyenLieu, dsMuaDacSan, ten)
+		if err != nil {
+			fmt.Print(err.Error())
+		}
+		c.IndentedJSON(http.StatusOK, dacSan)
 	}
-	kichThuocTrang, err := strconv.Atoi(c.Param("size"))
-	if err != nil {
-		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, err.Error())
-	}
-
-	dacSan, err := models.TimKiemDacSanTheoNguyenLieuMua(soTrang, kichThuocTrang, dsNguyenLieu, dsMuaDacSan, ten)
-	if err != nil {
-		fmt.Print(err.Error())
-	}
-	c.IndentedJSON(http.StatusOK, dacSan)
 }
 
 func TimKiemDacSanTheoDieuKien(c *gin.Context) {
@@ -417,40 +404,14 @@ func TimKiemDacSanTheoDieuKien(c *gin.Context) {
 		dsMuaDacSan = append(dsMuaDacSan, id)
 	}
 
-	ten := c.Param("ten")
-	soTrang, err := strconv.Atoi(c.Param("index"))
-	if err != nil {
-		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, err.Error())
+	ten, soTrang, kichThuocTrang, err := docTuKhoaTimKiem(c)
+	if err == nil {
+		dacSan, err := models.TimKiemDacSanTheoDieuKien(soTrang, kichThuocTrang, dsNguyenLieu, dsVungMien, dsMuaDacSan, ten)
+		if err != nil {
+			fmt.Print(err.Error())
+		}
+		c.IndentedJSON(http.StatusOK, dacSan)
 	}
-	kichThuocTrang, err := strconv.Atoi(c.Param("size"))
-	if err != nil {
-		fmt.Print(err.Error())
-		c.IndentedJSON(http.StatusConflict, err.Error())
-	}
-
-	dacSan, err := models.TimKiemDacSanTheoDieuKien(soTrang, kichThuocTrang, dsNguyenLieu, dsVungMien, dsMuaDacSan, ten)
-	if err != nil {
-		fmt.Print(err.Error())
-	}
-	c.IndentedJSON(http.StatusOK, dacSan)
-}
-
-func XemDacSan(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		fmt.Print(err.Error())
-	}
-	idNguoiDung := c.Param("idnguoidung")
-	dacSan, err := models.DocDacSanTheoIdCSDL(id)
-	if err != nil {
-		fmt.Print(err.Error())
-	}
-	err = models.ThemLuotXemDacSanCSDL(models.LuotXemDacSan{IdNguoiDung: idNguoiDung, IdDacSan: id, ThoiGianXem: time.Now()})
-	if err != nil {
-		fmt.Print(err.Error())
-	}
-	c.IndentedJSON(http.StatusOK, dacSan)
 }
 
 func ThemDacSanJson(c *gin.Context) {
@@ -478,7 +439,7 @@ func CapNhatDacSanJson(c *gin.Context) {
 		return
 	}
 
-	err := models.CapNhatDacSanCSDL(dacSan)
+	err := models.CapNhatDacSan(dacSan)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, false)

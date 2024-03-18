@@ -225,7 +225,7 @@ func TimKiemDacSanTheoDieuKien(soTrang int, doDaiTrang int, dsNguyenLieu []int, 
 	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, thanh_phan, dac_san_thuoc_vung, dac_san_theo_mua WHERE id = id_dac_san AND id_nguyen_lieu in ("+argStringNL+") AND id_vung_mien in ("+argStringVM+") AND id_mua_dac_san in ("+argStringMDS+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
 }
 
-func DocDacSanTheoIdCSDL(id int) (DacSan, error) {
+func DocDacSanTheoId(id int) (DacSan, error) {
 	var dacSan DacSan
 
 	row := db.QueryRow("SELECT * FROM dac_san WHERE id = ?", id)
@@ -264,7 +264,6 @@ func DocDacSanTheoIdCSDL(id int) (DacSan, error) {
 	} else {
 		fmt.Println(err)
 	}
-	dacSan.DiemDanhGia = TinhDiemDanhGiaDacSanCSDL(dacSan.ID)
 
 	return dacSan, nil
 }
@@ -283,7 +282,7 @@ func DocDacSanTheoNoiBanCSDL(id int) ([]DacSan, error) {
 		if err := rows.Scan(&id, &idDacSan); err != nil {
 			return nil, err
 		}
-		dacSan, err := DocDacSanTheoIdCSDL(idDacSan)
+		dacSan, err := DocDacSanTheoId(idDacSan)
 		if err == nil {
 			dsDacSan = append(dsDacSan, dacSan)
 		}
@@ -297,15 +296,15 @@ func DocDacSanTheoNoiBanCSDL(id int) ([]DacSan, error) {
 }
 
 func DocDacSanTheoTenCSDL(text string) ([]DacSan, error) {
-	return DocLike(text, "ten", "dac_san", DocDacSanTheoIdCSDL)
+	return DocLike(text, "ten", "dac_san", DocDacSanTheoId)
 }
 
 func DocDacSanTheoMoTaCSDL(text string) ([]DacSan, error) {
-	return DocLike(text, "mo_ta", "dac_san", DocDacSanTheoIdCSDL)
+	return DocLike(text, "mo_ta", "dac_san", DocDacSanTheoId)
 }
 
 func DocDacSanTheoCachCheBienCSDL(text string) ([]DacSan, error) {
-	return DocLike(text, "cach_che_bien", "dac_san", DocDacSanTheoIdCSDL)
+	return DocLike(text, "cach_che_bien", "dac_san", DocDacSanTheoId)
 }
 
 func DocLike(text string, cot string, bang string, timTheoID func(int) (DacSan, error)) ([]DacSan, error) {
@@ -373,7 +372,7 @@ func ThemDacSanCSDL(dacSan DacSan) (DacSan, error) {
 	return dacSan, nil
 }
 
-func CapNhatDacSanCSDL(dacSan DacSan) error {
+func CapNhatDacSan(dacSan DacSan) error {
 	_, err := db.Exec("UPDATE dac_san SET ten = ?, mo_ta = ?, cach_che_bien = ?, luot_xem = ?, diem_danh_gia = ?, luot_danh_gia = ? WHERE id = ?", dacSan.Ten, dacSan.MoTa, dacSan.CachCheBien, dacSan.LuotXem, dacSan.DiemDanhGia, dacSan.LuotDanhGia, dacSan.ID)
 	if err != nil {
 		return err
