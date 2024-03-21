@@ -56,11 +56,11 @@ func DocDanhSachDanhGiaDacSanAPI(c *gin.Context) {
 		c.IndentedJSON(http.StatusConflict, err.Error())
 		return
 	}
-	diem, err := models.DocDanhGiaDacSanCSDL(id)
+	ds, err := models.DocDanhSachDanhGiaDacSan(id)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())
 		return
 	}
-	c.IndentedJSON(http.StatusOK, diem)
+	c.IndentedJSON(http.StatusOK, ds)
 }

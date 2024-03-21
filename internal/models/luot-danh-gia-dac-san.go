@@ -42,10 +42,10 @@ func DocLichSuDanhGiaDacSanCSDL(idNguoiDung string) ([]LuotDanhGiaDacSan, error)
 	return lichSuDanhGia, nil
 }
 
-func DocDanhGiaDacSanCSDL(idDacSan int) ([]LuotDanhGiaDacSan, error) {
+func DocDanhSachDanhGiaDacSan(idDacSan int) ([]LuotDanhGiaDacSan, error) {
 	lichSuDanhGia := []LuotDanhGiaDacSan{}
 
-	rows, err := db.Query("SELECT * FROM danh_gia_dac_san WHERE id_dac_san = ?", idDacSan)
+	rows, err := db.Query("SELECT * FROM luot_danh_gia_dac_san WHERE id_dac_san = ?", idDacSan)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func TinhDiemDanhGiaDacSanCSDL(idDacSan int) float64 {
 	lichSuDanhGia := []LuotDanhGiaDacSan{}
 	tongDiem := 0.0
 
-	rows, err := db.Query("SELECT * FROM danh_gia_dac_san WHERE id_dac_san = " + strconv.Itoa(idDacSan))
+	rows, err := db.Query("SELECT * FROM luot_danh_gia_dac_san WHERE id_dac_san = " + strconv.Itoa(idDacSan))
 	if err != nil {
 		return -1
 	}

@@ -17,7 +17,7 @@ type LuotDanhGiaNoiBan struct {
 func DocLichSuDanhGiaNoiBanCSDL(idNguoiDung string) ([]LuotDanhGiaNoiBan, error) {
 	lichSuDanhGia := []LuotDanhGiaNoiBan{}
 
-	rows, err := db.Query("SELECT * FROM danh_gia_noi_ban WHERE id_nguoi_dung = " + idNguoiDung)
+	rows, err := db.Query("SELECT * FROM luot_danh_gia_noi_ban WHERE id_nguoi_dung = " + idNguoiDung)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func DocLichSuDanhGiaNoiBanCSDL(idNguoiDung string) ([]LuotDanhGiaNoiBan, error)
 func DocDanhGiaNoiBanCSDL(idNoiBan int) ([]LuotDanhGiaNoiBan, error) {
 	lichSuDanhGia := []LuotDanhGiaNoiBan{}
 
-	rows, err := db.Query("SELECT * FROM danh_gia_noi_ban WHERE id_noi_ban = ?", idNoiBan)
+	rows, err := db.Query("SELECT * FROM luot_danh_gia_noi_ban WHERE id_noi_ban = ?", idNoiBan)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func TinhDiemDanhGiaNoiBanCSDL(idNoiBan int) float64 {
 	lichSuDanhGia := []LuotDanhGiaNoiBan{}
 	tongDiem := 0.0
 
-	rows, err := db.Query("SELECT * FROM danh_gia_noi_ban WHERE id_noi_ban = " + strconv.Itoa(idNoiBan))
+	rows, err := db.Query("SELECT * FROM luot_danh_gia_noi_ban WHERE id_noi_ban = " + strconv.Itoa(idNoiBan))
 	if err != nil {
 		return -1
 	}
