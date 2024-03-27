@@ -8,12 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DocMuaDacSanJson(c *gin.Context) {
-	dsMuaDacSan, _ := models.DocMuaCSDL()
+func DocMuaDacSanAPI(c *gin.Context) {
+	dsMuaDacSan, _ := models.DocMua()
 	c.IndentedJSON(http.StatusOK, dsMuaDacSan)
 }
 
-func ThemMuaDacSanJson(c *gin.Context) {
+func ThemMuaDacSanAPI(c *gin.Context) {
 	var muaDacSan models.MuaDacSan
 
 	if err := c.BindJSON(&muaDacSan); err != nil {
@@ -21,7 +21,7 @@ func ThemMuaDacSanJson(c *gin.Context) {
 		return
 	}
 
-	muaDacSan, err := models.ThemMuaCSDL(muaDacSan)
+	muaDacSan, err := models.ThemMua(muaDacSan)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, muaDacSan)
@@ -30,7 +30,7 @@ func ThemMuaDacSanJson(c *gin.Context) {
 	}
 }
 
-func CapNhatMuaDacSanJson(c *gin.Context) {
+func CapNhatMuaDacSanAPI(c *gin.Context) {
 	var muaDacSan models.MuaDacSan
 
 	if err := c.BindJSON(&muaDacSan); err != nil {
@@ -38,7 +38,7 @@ func CapNhatMuaDacSanJson(c *gin.Context) {
 		return
 	}
 
-	err := models.CapNhatMuaCSDL(muaDacSan)
+	err := models.CapNhatMua(muaDacSan)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, false)
@@ -47,7 +47,7 @@ func CapNhatMuaDacSanJson(c *gin.Context) {
 	}
 }
 
-func XoaMuaDacSanJson(c *gin.Context) {
+func XoaMuaDacSanAPI(c *gin.Context) {
 	var Doc map[string]int
 
 	if err := c.BindJSON(&Doc); err != nil {
@@ -55,7 +55,7 @@ func XoaMuaDacSanJson(c *gin.Context) {
 		return
 	}
 
-	err := models.XoaMuaCSDL(Doc["id"])
+	err := models.XoaMua(Doc["id"])
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, false)

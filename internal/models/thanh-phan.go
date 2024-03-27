@@ -6,7 +6,7 @@ type ThanhPhan struct {
 	DonViTinh  string     `json:"don_vi_tinh"`
 }
 
-func DocThanhPhanTheoIdCSDL(id int) ([]ThanhPhan, error) {
+func DocThanhPhanTheoId(id int) ([]ThanhPhan, error) {
 	dsThanhPhan := []ThanhPhan{}
 
 	rows, err := db.Query("SELECT * FROM thanh_phan WHERE id_dac_san = ?", id)
@@ -22,7 +22,7 @@ func DocThanhPhanTheoIdCSDL(id int) ([]ThanhPhan, error) {
 		if err := rows.Scan(&temp, &idNguyenLieu, &thanhPhan.SoLuong, &thanhPhan.DonViTinh); err != nil {
 			return dsThanhPhan, err
 		}
-		nguyenLieu, err := DocNguyenLieuTheoIdCSDL(idNguyenLieu)
+		nguyenLieu, err := DocNguyenLieuTheoId(idNguyenLieu)
 		if err == nil {
 			thanhPhan.NguyenLieu = nguyenLieu
 		}
@@ -36,17 +36,17 @@ func DocThanhPhanTheoIdCSDL(id int) ([]ThanhPhan, error) {
 	return dsThanhPhan, nil
 }
 
-func ThemThanhPhanCSDL(idDacSan int, thanhPhan ThanhPhan) error {
+func ThemThanhPhan(idDacSan int, thanhPhan ThanhPhan) error {
 	_, err := db.Exec("INSERT INTO thanh_phan VALUES (?, ?, ?, ?)", idDacSan, thanhPhan.NguyenLieu.ID, thanhPhan.SoLuong, thanhPhan.DonViTinh)
 	return err
 }
 
-func CapNhatThanhPhanCSDL(idDacSan int, thanhPhan ThanhPhan) error {
+func CapNhatThanhPhan(idDacSan int, thanhPhan ThanhPhan) error {
 	_, err := db.Exec("UPDATE thanh_phan SET so_luong = ?, don_vi_tinh = ? WHERE id_dac_san = ? AND id_nguyen_lieu = ?", thanhPhan.SoLuong, thanhPhan.DonViTinh, idDacSan, thanhPhan.NguyenLieu.ID)
 	return err
 }
 
-func XoaThanhPhanCSDL(idDacSan int, idNguyenLieu int) error {
+func XoaThanhPhan(idDacSan int, idNguyenLieu int) error {
 	_, err := db.Exec("DELETE FROM thanh_phan WHERE id_dac_san = ? AND id_nguyen_lieu = ?", idDacSan, idNguyenLieu)
 	return err
 }

@@ -34,29 +34,17 @@ func DocNguoiDung(rows *sql.Rows, err error) ([]NguoiDung, error) {
 		if err := rows.Scan(&nguoiDung.ID, &nguoiDung.Email, &nguoiDung.Ten, &nguoiDung.IsNam, &nguoiDung.NgaySinh, &idDiaChi, &nguoiDung.SoDienThoai); err != nil {
 			return dsNguoiDung, err
 		}
-		lichSuXemDacSan, err := DocLichSuXemDacSanCSDL(nguoiDung.ID)
-		if err == nil {
-			nguoiDung.LichSuXemDacSan = lichSuXemDacSan
-		}
-		lichSuXemNoiBan, err := DocLichSuXemNoiBanCSDL(nguoiDung.ID)
-		if err == nil {
-			nguoiDung.LichSuXemNoiBan = lichSuXemNoiBan
-		}
-		lichSuDanhGiaDacSan, err := DocLichSuDanhGiaDacSanCSDL(nguoiDung.ID)
-		if err == nil {
-			nguoiDung.LichSuDanhGiaDacSan = lichSuDanhGiaDacSan
-		}
-		lichSuDanhGiaNoiBan, err := DocLichSuDanhGiaNoiBanCSDL(nguoiDung.ID)
-		if err == nil {
-			nguoiDung.LichSuDanhGiaNoiBan = lichSuDanhGiaNoiBan
-		}
-		diaChi, err := DocDiaChiTheoIdCSDL(idDiaChi)
+		nguoiDung.LichSuXemDacSan, err = DocLichSuXemDacSan(nguoiDung.ID)
+		nguoiDung.LichSuXemNoiBan, err = DocLichSuXemNoiBan(nguoiDung.ID)
+		nguoiDung.LichSuDanhGiaDacSan, err = DocLichSuDanhGiaDacSan(nguoiDung.ID)
+		nguoiDung.LichSuDanhGiaNoiBan, err = DocLichSuDanhGiaNoiBan(nguoiDung.ID)
+		diaChi, err := DocDiaChiTheoId(idDiaChi)
 		if err == nil {
 			nguoiDung.DiaChi = diaChi
 		}
 		dsNguoiDung = append(dsNguoiDung, nguoiDung)
 	}
-	return dsNguoiDung, nil
+	return dsNguoiDung, err
 }
 
 func DocDanhSachNguoiDung() ([]NguoiDung, error) {
@@ -78,23 +66,23 @@ func DocNguoiDungTheoId(id string) (NguoiDung, error) {
 		}
 		return nguoiDung, err
 	}
-	lichSuXemDacSan, err := DocLichSuXemDacSanCSDL(id)
+	lichSuXemDacSan, err := DocLichSuXemDacSan(id)
 	if err == nil {
 		nguoiDung.LichSuXemDacSan = lichSuXemDacSan
 	}
-	lichSuXemNoiBan, err := DocLichSuXemNoiBanCSDL(id)
+	lichSuXemNoiBan, err := DocLichSuXemNoiBan(id)
 	if err == nil {
 		nguoiDung.LichSuXemNoiBan = lichSuXemNoiBan
 	}
-	lichSuDanhGiaDacSan, err := DocLichSuDanhGiaDacSanCSDL(id)
+	lichSuDanhGiaDacSan, err := DocLichSuDanhGiaDacSan(id)
 	if err == nil {
 		nguoiDung.LichSuDanhGiaDacSan = lichSuDanhGiaDacSan
 	}
-	lichSuDanhGiaNoiBan, err := DocLichSuDanhGiaNoiBanCSDL(id)
+	lichSuDanhGiaNoiBan, err := DocLichSuDanhGiaNoiBan(id)
 	if err == nil {
 		nguoiDung.LichSuDanhGiaNoiBan = lichSuDanhGiaNoiBan
 	}
-	diaChi, err := DocDiaChiTheoIdCSDL(idDiaChi)
+	diaChi, err := DocDiaChiTheoId(idDiaChi)
 	if err == nil {
 		nguoiDung.DiaChi = diaChi
 	}

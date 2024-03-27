@@ -9,12 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DocNguyenLieuJson(c *gin.Context) {
-	dsNguyenLieu, _ := models.DocDanhSachNguyenLieuCSDL()
+func DocNguyenLieuAPI(c *gin.Context) {
+	dsNguyenLieu, _ := models.DocDanhSachNguyenLieu()
 	c.IndentedJSON(http.StatusOK, dsNguyenLieu)
 }
 
-func DocNguyenLieuTheoTenJson(c *gin.Context) {
+func DocNguyenLieuTheoTenAPI(c *gin.Context) {
 	ten := c.Param("ten")
 	soTrang, err := strconv.Atoi(c.Param("index"))
 	if err != nil {
@@ -26,7 +26,7 @@ func DocNguyenLieuTheoTenJson(c *gin.Context) {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())
 	}
-	dacSan, err := models.DocNguyenLieuTheoTenCSDL(soTrang, kichThuocTrang, ten)
+	dacSan, err := models.DocNguyenLieuTheoTen(soTrang, kichThuocTrang, ten)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())
@@ -34,7 +34,7 @@ func DocNguyenLieuTheoTenJson(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, dacSan)
 }
 
-func ThemNguyenLieuJson(c *gin.Context) {
+func ThemNguyenLieuAPI(c *gin.Context) {
 	var nguyenLieu models.NguyenLieu
 
 	if err := c.BindJSON(&nguyenLieu); err != nil {
@@ -42,7 +42,7 @@ func ThemNguyenLieuJson(c *gin.Context) {
 		return
 	}
 
-	nguyenLieu, err := models.ThemNguyenLieuCSDL(nguyenLieu)
+	nguyenLieu, err := models.ThemNguyenLieu(nguyenLieu)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, nguyenLieu)
@@ -51,7 +51,7 @@ func ThemNguyenLieuJson(c *gin.Context) {
 	}
 }
 
-func CapNhatNguyenLieuJson(c *gin.Context) {
+func CapNhatNguyenLieuAPI(c *gin.Context) {
 	var nguyenLieu models.NguyenLieu
 
 	if err := c.BindJSON(&nguyenLieu); err != nil {
@@ -59,7 +59,7 @@ func CapNhatNguyenLieuJson(c *gin.Context) {
 		return
 	}
 
-	err := models.CapNhatNguyenLieuCSDL(nguyenLieu)
+	err := models.CapNhatNguyenLieu(nguyenLieu)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, false)
@@ -68,7 +68,7 @@ func CapNhatNguyenLieuJson(c *gin.Context) {
 	}
 }
 
-func XoaNguyenLieuJson(c *gin.Context) {
+func XoaNguyenLieuAPI(c *gin.Context) {
 	var Doc map[string]int
 
 	if err := c.BindJSON(&Doc); err != nil {
@@ -76,7 +76,7 @@ func XoaNguyenLieuJson(c *gin.Context) {
 		return
 	}
 
-	err := models.XoaNguyenLieuCSDL(Doc["id"])
+	err := models.XoaNguyenLieu(Doc["id"])
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, false)

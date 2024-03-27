@@ -6,7 +6,7 @@ type MuaDacSan struct {
 	Thang []int  `json:"thang"`
 }
 
-func DocMuaCSDL() ([]MuaDacSan, error) {
+func DocMua() ([]MuaDacSan, error) {
 	dsMuaDacSan := []MuaDacSan{}
 
 	rows, err := db.Query("SELECT * FROM mua_dac_san ORDER BY id ASC")
@@ -30,7 +30,7 @@ func DocMuaCSDL() ([]MuaDacSan, error) {
 	return dsMuaDacSan, nil
 }
 
-func DocMuaTheoIdCSDL(id int) (MuaDacSan, error) {
+func DocMuaTheoId(id int) (MuaDacSan, error) {
 	var mua MuaDacSan
 
 	row := db.QueryRow("SELECT * FROM mua_dac_san WHERE id = ?", id)
@@ -42,7 +42,7 @@ func DocMuaTheoIdCSDL(id int) (MuaDacSan, error) {
 	return mua, nil
 }
 
-func DocMuaDacSanCSDL(id int) ([]MuaDacSan, error) {
+func DocMuaDacSan(id int) ([]MuaDacSan, error) {
 	dsMuaDacSan := []MuaDacSan{}
 
 	rows, err := db.Query("SELECT * FROM dac_san_theo_mua WHERE id_dac_san = ?", id)
@@ -56,7 +56,7 @@ func DocMuaDacSanCSDL(id int) ([]MuaDacSan, error) {
 		if err := rows.Scan(&id, &idMuaDacSan); err != nil {
 			return dsMuaDacSan, err
 		}
-		muaDacSan, err := DocMuaTheoIdCSDL(idMuaDacSan)
+		muaDacSan, err := DocMuaTheoId(idMuaDacSan)
 		if err != nil {
 			return dsMuaDacSan, err
 		}
@@ -70,7 +70,7 @@ func DocMuaDacSanCSDL(id int) ([]MuaDacSan, error) {
 	return dsMuaDacSan, nil
 }
 
-func ThemMuaCSDL(muaDacSan MuaDacSan) (MuaDacSan, error) {
+func ThemMua(muaDacSan MuaDacSan) (MuaDacSan, error) {
 	var count int
 	db.QueryRow("SELECT MAX(id) FROM mua_dac_san").Scan(&count)
 	count++
@@ -79,12 +79,12 @@ func ThemMuaCSDL(muaDacSan MuaDacSan) (MuaDacSan, error) {
 	return muaDacSan, err
 }
 
-func CapNhatMuaCSDL(muaDacSan MuaDacSan) error {
+func CapNhatMua(muaDacSan MuaDacSan) error {
 	_, err := db.Exec("UPDATE mua_dac_san SET ten = ? WHERE id = ?", muaDacSan.Ten, muaDacSan.ID)
 	return err
 }
 
-func XoaMuaCSDL(id int) error {
+func XoaMua(id int) error {
 	_, err := db.Exec("DELETE FROM mua_dac_san WHERE id = ?", id)
 	return err
 }

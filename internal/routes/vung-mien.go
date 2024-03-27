@@ -8,12 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DocVungMienJson(c *gin.Context) {
-	dsVungMien, _ := models.DocVungMienCSDL()
+func DocVungMienAPI(c *gin.Context) {
+	dsVungMien, _ := models.DocVungMien()
 	c.IndentedJSON(http.StatusOK, dsVungMien)
 }
 
-func ThemVungMienJson(c *gin.Context) {
+func ThemVungMienAPI(c *gin.Context) {
 	var vungMien models.VungMien
 
 	if err := c.BindJSON(&vungMien); err != nil {
@@ -21,7 +21,7 @@ func ThemVungMienJson(c *gin.Context) {
 		return
 	}
 
-	nguyenLieu, err := models.ThemVungMienCSDL(vungMien)
+	nguyenLieu, err := models.ThemVungMien(vungMien)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, nguyenLieu)
@@ -30,7 +30,7 @@ func ThemVungMienJson(c *gin.Context) {
 	}
 }
 
-func CapNhatVungMienJson(c *gin.Context) {
+func CapNhatVungMienAPI(c *gin.Context) {
 	var vungMien models.VungMien
 
 	if err := c.BindJSON(&vungMien); err != nil {
@@ -38,7 +38,7 @@ func CapNhatVungMienJson(c *gin.Context) {
 		return
 	}
 
-	err := models.CapNhatVungMienCSDL(vungMien)
+	err := models.CapNhatVungMien(vungMien)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, false)
@@ -47,7 +47,7 @@ func CapNhatVungMienJson(c *gin.Context) {
 	}
 }
 
-func XoaVungMienJson(c *gin.Context) {
+func XoaVungMienAPI(c *gin.Context) {
 	var Doc map[string]int
 
 	if err := c.BindJSON(&Doc); err != nil {
@@ -55,7 +55,7 @@ func XoaVungMienJson(c *gin.Context) {
 		return
 	}
 
-	err := models.XoaVungMienCSDL(Doc["id"])
+	err := models.XoaVungMien(Doc["id"])
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, false)

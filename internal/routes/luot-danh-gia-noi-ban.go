@@ -2,18 +2,19 @@ package routes
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"nam/dac_san_api/internal/models"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
-func TinhDiemDanhGiaNoiBanTheoIdJson(c *gin.Context) {
+func TinhDiemDanhGiaNoiBanTheoIdAPI(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.IndentedJSON(http.StatusConflict, 0)
 	}
-	c.IndentedJSON(http.StatusOK, models.TinhDiemDanhGiaNoiBanCSDL(id))
+	c.IndentedJSON(http.StatusOK, models.TinhDiemDanhGiaNoiBan(id))
 }
 
 func DanhGiaNoiBanAPI(c *gin.Context) {
@@ -24,7 +25,7 @@ func DanhGiaNoiBanAPI(c *gin.Context) {
 		return
 	}
 
-	if err := models.ThemDanhGiaNoiBanCSDL(danhGia); err != nil {
+	if err := models.ThemDanhGiaNoiBan(danhGia); err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())
 		return
@@ -40,7 +41,7 @@ func DocDanhGiaNoiBanTheoNguoiDungAPI(c *gin.Context) {
 		return
 	}
 	idNguoiDung := c.Param("idNguoiDung")
-	diem, err := models.DocNoiBanTheoNguoiDungCSDL(id, idNguoiDung)
+	diem, err := models.DocNoiBanTheoNguoiDung(id, idNguoiDung)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())
@@ -56,7 +57,7 @@ func DocDanhSachDanhGiaNoiBanAPI(c *gin.Context) {
 		c.IndentedJSON(http.StatusConflict, err.Error())
 		return
 	}
-	diem, err := models.DocDanhGiaNoiBanCSDL(id)
+	diem, err := models.DocDanhGiaNoiBan(id)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())

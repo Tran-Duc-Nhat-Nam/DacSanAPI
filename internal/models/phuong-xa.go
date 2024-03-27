@@ -11,7 +11,7 @@ type PhuongXa struct {
 	QuanHuyen QuanHuyen `json:"quan_huyen"`
 }
 
-func DocPhuongXaTheoQuanHuyenCSDL(id int) ([]PhuongXa, error) {
+func DocPhuongXaTheoQuanHuyen(id int) ([]PhuongXa, error) {
 	dsPhuongXa := []PhuongXa{}
 
 	rows, err := db.Query("SELECT * FROM phuong_xa WHERE quan_huyen = ? ORDER BY ten ASC", id)
@@ -26,7 +26,7 @@ func DocPhuongXaTheoQuanHuyenCSDL(id int) ([]PhuongXa, error) {
 		if err := rows.Scan(&phuongXa.ID, &phuongXa.Ten, &idQuanHuyen); err != nil {
 			return dsPhuongXa, err
 		}
-		quanHuyen, err := DocQuanHuyenTheoIdCSDL(idQuanHuyen)
+		quanHuyen, err := DocQuanHuyenTheoId(idQuanHuyen)
 		if err == nil {
 			phuongXa.QuanHuyen = quanHuyen
 		}
@@ -40,7 +40,7 @@ func DocPhuongXaTheoQuanHuyenCSDL(id int) ([]PhuongXa, error) {
 	return dsPhuongXa, nil
 }
 
-func DocPhuongXaTheoIdCSDL(id int) (PhuongXa, error) {
+func DocPhuongXaTheoId(id int) (PhuongXa, error) {
 	var phuongXa PhuongXa
 	var idQuanHuyen int
 
@@ -51,24 +51,24 @@ func DocPhuongXaTheoIdCSDL(id int) (PhuongXa, error) {
 		}
 		return phuongXa, err
 	}
-	quanHuyen, err := DocQuanHuyenTheoIdCSDL(idQuanHuyen)
+	quanHuyen, err := DocQuanHuyenTheoId(idQuanHuyen)
 	if err == nil {
 		phuongXa.QuanHuyen = quanHuyen
 	}
 	return phuongXa, nil
 }
 
-func ThemPhuongXaCSDL(phuongXa PhuongXa) (PhuongXa, error) {
+func ThemPhuongXa(phuongXa PhuongXa) (PhuongXa, error) {
 	_, err := db.Exec("INSERT INTO phuong_xa VALUES (?, ?, ?)", phuongXa.ID, phuongXa.Ten, phuongXa.QuanHuyen.ID)
 	return phuongXa, err
 }
 
-func CapNhatPhuongXaCSDL(phuongXa PhuongXa) error {
+func CapNhatPhuongXa(phuongXa PhuongXa) error {
 	_, err := db.Exec("UPDATE phuong_xa SET ten = ?, quan_huyen = ? WHERE id = ?", phuongXa.Ten, phuongXa.QuanHuyen.ID, phuongXa.ID)
 	return err
 }
 
-func XoaPhuongXaCSDL(id int) error {
+func XoaPhuongXa(id int) error {
 	_, err := db.Exec("DELETE FROM phuong_xa WHERE id = ?", id)
 	return err
 }

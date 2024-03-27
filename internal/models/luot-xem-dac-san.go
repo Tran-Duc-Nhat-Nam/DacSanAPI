@@ -10,28 +10,35 @@ type LuotXemDacSan struct {
 	ThoiGianXem time.Time `json:"thoi_gian"`
 }
 
-func DocLichSuXemDacSanCSDL(idNguoiDung string) ([]LuotXemDacSan, error) {
+func DocLichSuXemDacSan(idNguoiDung string) ([]LuotXemDacSan, error) {
 	lichSuXem := []LuotXemDacSan{}
 
-	rows, err := db.Query("SELECT * FROM lich_su_xem_dac_san WHERE id_nguoi_dung = " + idNguoiDung)
+	rows, err := db.Query("SELECT * FROM luot_xem_dac_san WHERE id_nguoi_dung = ?", idNguoiDung)
 	if err != nil {
-		return nil, err
+		return lichSuXem, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		var luotXem LuotXemDacSan
 		if err := rows.Scan(&luotXem.IdNguoiDung, &luotXem.IdDacSan, &luotXem.ThoiGianXem); err != nil {
-			return nil, err
+			return lichSuXem, err
 		}
 		lichSuXem = append(lichSuXem, luotXem)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return lichSuXem, err
 	}
 
 	return lichSuXem, nil
+}
+
+func DemLuotXemDacSan(idNguoiDung string) (int, error) {
+	soLuotXem := -1
+	row := db.QueryRow("SELECT COUNT(*) FROM luot_xem_dac_san WHERE id_nguoi_dung = ?", idNguoiDung)
+	err := row.Scan(&soLuotXem)
+	return soLuotXem, err
 }
 
 func ThemLuotXemDacSan(luotXem LuotXemDacSan) error {

@@ -8,12 +8,12 @@ import (
 	"strconv"
 )
 
-func TinhDiemDanhGiaDacSanTheoIdJson(c *gin.Context) {
+func TinhDiemDanhGiaDacSanTheoIdAPI(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.IndentedJSON(http.StatusConflict, 0)
 	}
-	c.IndentedJSON(http.StatusOK, models.TinhDiemDanhGiaDacSanCSDL(id))
+	c.IndentedJSON(http.StatusOK, models.TinhDiemDanhGiaDacSan(id))
 }
 
 func DanhGiaDacSanAPI(c *gin.Context) {
@@ -24,7 +24,7 @@ func DanhGiaDacSanAPI(c *gin.Context) {
 		return
 	}
 
-	if err := models.ThemDanhGiaDacSanCSDL(danhGia); err != nil {
+	if err := models.ThemDanhGiaDacSan(danhGia); err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())
 		return
@@ -40,7 +40,7 @@ func DocDanhGiaDacSanTheoNguoiDungAPI(c *gin.Context) {
 		return
 	}
 	idNguoiDung := c.Param("idNguoiDung")
-	diem, err := models.DocDacSanTheoNguoiDungCSDL(id, idNguoiDung)
+	diem, err := models.DocDacSanTheoNguoiDung(id, idNguoiDung)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())

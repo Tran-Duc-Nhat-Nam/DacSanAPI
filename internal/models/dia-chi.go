@@ -11,7 +11,7 @@ type DiaChi struct {
 	PhuongXa PhuongXa `json:"phuong_xa"`
 }
 
-func DocDiaChiTheoIdCSDL(id int) (DiaChi, error) {
+func DocDiaChiTheoId(id int) (DiaChi, error) {
 	var diaChi DiaChi
 	var idPhuongXa int
 	row := db.QueryRow("SELECT * FROM dia_chi WHERE id = ?", id)
@@ -21,7 +21,7 @@ func DocDiaChiTheoIdCSDL(id int) (DiaChi, error) {
 		}
 		return diaChi, err
 	}
-	phuongXa, err := DocPhuongXaTheoIdCSDL(idPhuongXa)
+	phuongXa, err := DocPhuongXaTheoId(idPhuongXa)
 	if err == nil {
 		diaChi.PhuongXa = phuongXa
 	}
@@ -50,7 +50,7 @@ func CapNhatDiaChi(diaChi DiaChi) error {
 	return err
 }
 
-func XoaDiaChiCSDL(id int) error {
+func XoaDiaChi(id int) error {
 	_, err := db.Exec("DELETE FROM dia_chi WHERE id = ?", id)
 	return err
 }

@@ -9,12 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DocQuanHuyenTheoTinhThanhJson(c *gin.Context) {
+func DocQuanHuyenTheoTinhThanhAPI(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		fmt.Print(err.Error())
 	}
-	quanHuyen, err := models.DocQuanHuyenTheoTinhThanhCSDL(id)
+	quanHuyen, err := models.DocQuanHuyenTheoTinhThanh(id)
 	if err != nil {
 		fmt.Print(err.Error())
 	}

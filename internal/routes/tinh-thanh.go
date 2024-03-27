@@ -8,15 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DocTinhThanhJson(c *gin.Context) {
-	tinhThanh, err := models.DocTinhThanhCSDL()
+func DocTinhThanhAPI(c *gin.Context) {
+	tinhThanh, err := models.DocTinhThanh()
 	if err != nil {
 		fmt.Print(err.Error())
 	}
 	c.IndentedJSON(http.StatusOK, tinhThanh)
 }
 
-func ThemTinhThanhJson(c *gin.Context) {
+func ThemTinhThanhAPI(c *gin.Context) {
 	var tinhThanh models.TinhThanh
 
 	if err := c.BindJSON(&tinhThanh); err != nil {
@@ -24,7 +24,7 @@ func ThemTinhThanhJson(c *gin.Context) {
 		return
 	}
 
-	tinhThanh, err := models.ThemTinhThanhCSDL(tinhThanh)
+	tinhThanh, err := models.ThemTinhThanh(tinhThanh)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, tinhThanh)
@@ -33,7 +33,7 @@ func ThemTinhThanhJson(c *gin.Context) {
 	}
 }
 
-func CapNhatTinhThanhJson(c *gin.Context) {
+func CapNhatTinhThanhAPI(c *gin.Context) {
 	var tinhThanh models.TinhThanh
 
 	if err := c.BindJSON(&tinhThanh); err != nil {
@@ -41,7 +41,7 @@ func CapNhatTinhThanhJson(c *gin.Context) {
 		return
 	}
 
-	err := models.CapNhatTinhThanhCSDL(tinhThanh)
+	err := models.CapNhatTinhThanh(tinhThanh)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, false)
@@ -50,7 +50,7 @@ func CapNhatTinhThanhJson(c *gin.Context) {
 	}
 }
 
-func XoaTinhThanhJson(c *gin.Context) {
+func XoaTinhThanhAPI(c *gin.Context) {
 	var Doc map[string]int
 
 	if err := c.BindJSON(&Doc); err != nil {
@@ -58,7 +58,7 @@ func XoaTinhThanhJson(c *gin.Context) {
 		return
 	}
 
-	err := models.XoaTinhThanhCSDL(Doc["id"])
+	err := models.XoaTinhThanh(Doc["id"])
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, false)

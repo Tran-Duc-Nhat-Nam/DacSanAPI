@@ -7,7 +7,7 @@ type HinhAnh struct {
 	URL  string `json:"url"`
 }
 
-func DocHinhAnhTheoIdCSDL(id int) (HinhAnh, error) {
+func DocHinhAnhTheoId(id int) (HinhAnh, error) {
 	var hinhAhh HinhAnh
 
 	row := db.QueryRow("SELECT * FROM hinh_anh WHERE id = ?", id)
@@ -19,7 +19,7 @@ func DocHinhAnhTheoIdCSDL(id int) (HinhAnh, error) {
 	return hinhAhh, nil
 }
 
-func DocHinhAnhDacSanCSDL(id int) ([]HinhAnh, error) {
+func DocHinhAnhDacSan(id int) ([]HinhAnh, error) {
 	dsHinhAnh := []HinhAnh{}
 
 	rows, err := db.Query("SELECT * FROM hinh_anh_dac_san WHERE id_dac_san = ?", id)
@@ -34,7 +34,7 @@ func DocHinhAnhDacSanCSDL(id int) ([]HinhAnh, error) {
 		if err := rows.Scan(&idDacSan, &idHinhAnh); err != nil {
 			return nil, err
 		}
-		hinhAnh, err := DocHinhAnhTheoIdCSDL(idHinhAnh)
+		hinhAnh, err := DocHinhAnhTheoId(idHinhAnh)
 		if err != nil {
 			return dsHinhAnh, err
 		}
@@ -48,18 +48,18 @@ func DocHinhAnhDacSanCSDL(id int) ([]HinhAnh, error) {
 	return dsHinhAnh, nil
 }
 
-func ThemHinhAnhCSDL(hinhAnh HinhAnh) error {
+func ThemHinhAnh(hinhAnh HinhAnh) error {
 	hinhAnh.ID = TaoIdMoi("hinh_anh")
 	_, err := db.Exec("INSERT INTO hinh_anh VALUES (?, ?, ?, ?)", hinhAnh.ID, hinhAnh.Ten, hinhAnh.MoTa, hinhAnh.URL)
 	return err
 }
 
-func CapNhatHinhAnhCSDL(hinhAnh HinhAnh) error {
+func CapNhatHinhAnh(hinhAnh HinhAnh) error {
 	_, err := db.Exec("UPDATE hinh_anh SET ten = ?, mo_ta = ?, url = ? WHERE id = ?", hinhAnh.Ten, hinhAnh.MoTa, hinhAnh.URL, hinhAnh.ID)
 	return err
 }
 
-func XoaHinhAnhCSDL(id int) error {
+func XoaHinhAnh(id int) error {
 	_, err := db.Exec("DELETE FROM hinh_anh WHERE id = ?", id)
 	return err
 }

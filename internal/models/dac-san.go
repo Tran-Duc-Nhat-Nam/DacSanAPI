@@ -37,31 +37,31 @@ func DocDacSan(rows *sql.Rows, err error) ([]DacSan, error) {
 		if err := rows.Scan(&dacSan.ID, &dacSan.Ten, &dacSan.MoTa, &dacSan.CachCheBien, &dacSan.LuotXem, &dacSan.DiemDanhGia, &dacSan.LuotDanhGia, &idHinhDaiDien); err != nil {
 			return dsDacSan, err
 		}
-		thanhPhan, err := DocThanhPhanTheoIdCSDL(dacSan.ID)
+		thanhPhan, err := DocThanhPhanTheoId(dacSan.ID)
 		if err == nil {
 			dacSan.ThanhPhan = thanhPhan
 		} else {
 			fmt.Println(err)
 		}
-		vungMien, err := DocVungMienDacSanCSDL(dacSan.ID)
+		vungMien, err := DocVungMienDacSan(dacSan.ID)
 		if err == nil {
 			dacSan.VungMien = vungMien
 		} else {
 			fmt.Println(err)
 		}
-		muaDacSan, err := DocMuaDacSanCSDL(dacSan.ID)
+		muaDacSan, err := DocMuaDacSan(dacSan.ID)
 		if err == nil {
 			dacSan.MuaDacSan = muaDacSan
 		} else {
 			fmt.Println(err)
 		}
-		hinhAnh, err := DocHinhAnhDacSanCSDL(dacSan.ID)
+		hinhAnh, err := DocHinhAnhDacSan(dacSan.ID)
 		if err == nil {
 			dacSan.HinhAnh = hinhAnh
 		} else {
 			fmt.Println(err)
 		}
-		hinhDaiDien, err := DocHinhAnhTheoIdCSDL(idHinhDaiDien)
+		hinhDaiDien, err := DocHinhAnhTheoId(idHinhDaiDien)
 		if err == nil {
 			dacSan.HinhDaiDien = hinhDaiDien
 		} else {
@@ -107,7 +107,7 @@ func TimKiemDacSanTheoDanhSachVungMien(soTrang int, doDaiTrang int, ten string, 
 		if i == 0 {
 			argString += strconv.Itoa(id)
 		} else {
-			argString += (", " + strconv.Itoa(id))
+			argString += ", " + strconv.Itoa(id)
 		}
 	}
 	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, dac_san_thuoc_vung WHERE id = id_dac_san AND id_vung_mien in ("+argString+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
@@ -119,7 +119,7 @@ func TimKiemDacSanTheoDanhSachMua(soTrang int, doDaiTrang int, ten string, dsID 
 		if i == 0 {
 			argString += strconv.Itoa(id)
 		} else {
-			argString += (", " + strconv.Itoa(id))
+			argString += ", " + strconv.Itoa(id)
 		}
 	}
 	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, dac_san_theo_mua WHERE id = id_dac_san AND id_mua_dac_san in ("+argString+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
@@ -131,7 +131,7 @@ func TimKiemDacSanTheoMuaVungMien(soTrang int, doDaiTrang int, dsVungMien []int,
 		if i == 0 {
 			argStringVM += strconv.Itoa(id)
 		} else {
-			argStringVM += (", " + strconv.Itoa(id))
+			argStringVM += ", " + strconv.Itoa(id)
 		}
 	}
 	var argStringMDS string
@@ -139,7 +139,7 @@ func TimKiemDacSanTheoMuaVungMien(soTrang int, doDaiTrang int, dsVungMien []int,
 		if i == 0 {
 			argStringMDS += strconv.Itoa(id)
 		} else {
-			argStringMDS += (", " + strconv.Itoa(id))
+			argStringMDS += ", " + strconv.Itoa(id)
 		}
 	}
 	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, dac_san_thuoc_vung, dac_san_theo_mua WHERE id = id_dac_san AND id_vung_mien in ("+argStringVM+") AND id_mua_dac_san in ("+argStringMDS+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
@@ -151,7 +151,7 @@ func TimKiemDacSanTheoDanhSachNguyenLieu(soTrang int, doDaiTrang int, ten string
 		if i == 0 {
 			argString += strconv.Itoa(id)
 		} else {
-			argString += (", " + strconv.Itoa(id))
+			argString += ", " + strconv.Itoa(id)
 		}
 	}
 	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, thanh_phan WHERE id = id_dac_san AND id_nguyen_lieu in ("+argString+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
@@ -163,7 +163,7 @@ func TimKiemDacSanTheoNguyenLieuVungMien(soTrang int, doDaiTrang int, dsNguyenLi
 		if i == 0 {
 			argStringNL += strconv.Itoa(id)
 		} else {
-			argStringNL += (", " + strconv.Itoa(id))
+			argStringNL += ", " + strconv.Itoa(id)
 		}
 	}
 	var argStringVM string
@@ -171,7 +171,7 @@ func TimKiemDacSanTheoNguyenLieuVungMien(soTrang int, doDaiTrang int, dsNguyenLi
 		if i == 0 {
 			argStringVM += strconv.Itoa(id)
 		} else {
-			argStringVM += (", " + strconv.Itoa(id))
+			argStringVM += ", " + strconv.Itoa(id)
 		}
 	}
 	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, thanh_phan, dac_san_thuoc_vung WHERE id = id_dac_san AND id_nguyen_lieu in ("+argStringNL+") AND id_vung_mien in ("+argStringVM+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
@@ -183,7 +183,7 @@ func TimKiemDacSanTheoNguyenLieuMua(soTrang int, doDaiTrang int, dsNguyenLieu []
 		if i == 0 {
 			argStringNL += strconv.Itoa(id)
 		} else {
-			argStringNL += (", " + strconv.Itoa(id))
+			argStringNL += ", " + strconv.Itoa(id)
 		}
 	}
 	var argStringMDS string
@@ -191,7 +191,7 @@ func TimKiemDacSanTheoNguyenLieuMua(soTrang int, doDaiTrang int, dsNguyenLieu []
 		if i == 0 {
 			argStringMDS += strconv.Itoa(id)
 		} else {
-			argStringMDS += (", " + strconv.Itoa(id))
+			argStringMDS += ", " + strconv.Itoa(id)
 		}
 	}
 	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, thanh_phan, dac_san_theo_mua WHERE id = id_dac_san AND id_nguyen_lieu in ("+argStringNL+") AND id_mua_dac_san in ("+argStringMDS+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
@@ -203,7 +203,7 @@ func TimKiemDacSanTheoDieuKien(soTrang int, doDaiTrang int, dsNguyenLieu []int, 
 		if i == 0 {
 			argStringNL += strconv.Itoa(id)
 		} else {
-			argStringNL += (", " + strconv.Itoa(id))
+			argStringNL += ", " + strconv.Itoa(id)
 		}
 	}
 	var argStringMDS string
@@ -211,7 +211,7 @@ func TimKiemDacSanTheoDieuKien(soTrang int, doDaiTrang int, dsNguyenLieu []int, 
 		if i == 0 {
 			argStringMDS += strconv.Itoa(id)
 		} else {
-			argStringMDS += (", " + strconv.Itoa(id))
+			argStringMDS += ", " + strconv.Itoa(id)
 		}
 	}
 	var argStringVM string
@@ -219,7 +219,7 @@ func TimKiemDacSanTheoDieuKien(soTrang int, doDaiTrang int, dsNguyenLieu []int, 
 		if i == 0 {
 			argStringVM += strconv.Itoa(id)
 		} else {
-			argStringVM += (", " + strconv.Itoa(id))
+			argStringVM += ", " + strconv.Itoa(id)
 		}
 	}
 	return DocDacSan(db.Query("SELECT id, ten, mo_ta, cach_che_bien, luot_xem, diem_danh_gia, luot_danh_gia, hinh_dai_dien FROM dac_san, thanh_phan, dac_san_thuoc_vung, dac_san_theo_mua WHERE id = id_dac_san AND id_nguyen_lieu in ("+argStringNL+") AND id_vung_mien in ("+argStringVM+") AND id_mua_dac_san in ("+argStringMDS+") AND ten LIKE ? ORDER BY id ASC LIMIT ?, ?", "%"+ten+"%", soTrang*doDaiTrang, doDaiTrang))
@@ -234,31 +234,31 @@ func DocDacSanTheoId(id int) (DacSan, error) {
 	if err := row.Scan(&dacSan.ID, &dacSan.Ten, &dacSan.MoTa, &dacSan.CachCheBien, &dacSan.LuotXem, &dacSan.DiemDanhGia, &dacSan.LuotDanhGia, &idHinhDaiDien); err != nil {
 		return dacSan, err
 	}
-	thanhPhan, err := DocThanhPhanTheoIdCSDL(dacSan.ID)
+	thanhPhan, err := DocThanhPhanTheoId(dacSan.ID)
 	if err == nil {
 		dacSan.ThanhPhan = thanhPhan
 	} else {
 		fmt.Println(err)
 	}
-	vungMien, err := DocVungMienDacSanCSDL(dacSan.ID)
+	vungMien, err := DocVungMienDacSan(dacSan.ID)
 	if err == nil {
 		dacSan.VungMien = vungMien
 	} else {
 		fmt.Println(err)
 	}
-	muaDacSan, err := DocMuaDacSanCSDL(dacSan.ID)
+	muaDacSan, err := DocMuaDacSan(dacSan.ID)
 	if err == nil {
 		dacSan.MuaDacSan = muaDacSan
 	} else {
 		fmt.Println(err)
 	}
-	hinhAnh, err := DocHinhAnhDacSanCSDL(dacSan.ID)
+	hinhAnh, err := DocHinhAnhDacSan(dacSan.ID)
 	if err == nil {
 		dacSan.HinhAnh = hinhAnh
 	} else {
 		fmt.Println(err)
 	}
-	hinhDaiDien, err := DocHinhAnhTheoIdCSDL(idHinhDaiDien)
+	hinhDaiDien, err := DocHinhAnhTheoId(idHinhDaiDien)
 	if err == nil {
 		dacSan.HinhDaiDien = hinhDaiDien
 	} else {
@@ -268,7 +268,7 @@ func DocDacSanTheoId(id int) (DacSan, error) {
 	return dacSan, nil
 }
 
-func DocDacSanTheoNoiBanCSDL(id int) ([]DacSan, error) {
+func DocDacSanTheoNoiBan(id int) ([]DacSan, error) {
 	dsDacSan := []DacSan{}
 
 	rows, err := db.Query("SELECT * FROM noi_ban_dac_san where id_noi_ban = ? ORDER BY id_dac_san ASC", id)
@@ -295,15 +295,15 @@ func DocDacSanTheoNoiBanCSDL(id int) ([]DacSan, error) {
 	return dsDacSan, nil
 }
 
-func DocDacSanTheoTenCSDL(text string) ([]DacSan, error) {
+func DocDacSanTheoTen(text string) ([]DacSan, error) {
 	return DocLike(text, "ten", "dac_san", DocDacSanTheoId)
 }
 
-func DocDacSanTheoMoTaCSDL(text string) ([]DacSan, error) {
+func DocDacSanTheoMoTa(text string) ([]DacSan, error) {
 	return DocLike(text, "mo_ta", "dac_san", DocDacSanTheoId)
 }
 
-func DocDacSanTheoCachCheBienCSDL(text string) ([]DacSan, error) {
+func DocDacSanTheoCachCheBien(text string) ([]DacSan, error) {
 	return DocLike(text, "cach_che_bien", "dac_san", DocDacSanTheoId)
 }
 
@@ -311,7 +311,7 @@ func DocLike(text string, cot string, bang string, timTheoID func(int) (DacSan, 
 	return DocDacSan(db.Query("SELECT id FROM "+bang+" WHERE "+cot+" LIKE ? ORDER BY id ASC", "%"+text+"%"))
 }
 
-func ThemDacSanCSDL(dacSan DacSan) (DacSan, error) {
+func ThemDacSan(dacSan DacSan) (DacSan, error) {
 	for _, hinhAnh := range dacSan.HinhAnh {
 		var count int
 		_ = db.QueryRow("SELECT COUNT(*) FROM hinh_anh WHERE ten = ?", hinhAnh.Ten).Scan(&count)
@@ -415,7 +415,7 @@ func CapNhatDacSan(dacSan DacSan) error {
 	return nil
 }
 
-func XoaDacSanCSDL(id int) error {
+func XoaDacSan(id int) error {
 	_, err := db.Exec("DELETE FROM dac_san_thuoc_vung WHERE id_dac_san = ?", id)
 	if err != nil {
 		return err

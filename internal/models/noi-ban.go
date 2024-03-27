@@ -28,11 +28,11 @@ func DocNoiBan(rows *sql.Rows, err error) ([]NoiBan, error) {
 		if err := rows.Scan(&noiBan.ID, &noiBan.Ten, &noiBan.MoTa, &diaChiId, &noiBan.LuotXem, &noiBan.DiemDanhGia, &noiBan.LuotDanhGia); err != nil {
 			return nil, err
 		}
-		diaChi, err := DocDiaChiTheoIdCSDL(diaChiId)
+		diaChi, err := DocDiaChiTheoId(diaChiId)
 		if err == nil {
 			noiBan.DiaChi = diaChi
 		}
-		dsID, err := DocNoiBanDacSanTheoNoiBanCSDL(noiBan.ID)
+		dsID, err := DocNoiBanDacSanTheoNoiBan(noiBan.ID)
 		if err == nil {
 			noiBan.DsDacSan = dsID
 		}
@@ -65,11 +65,11 @@ func DocNoiBanTheoId(id int) (NoiBan, error) {
 		}
 		return noiBan, err
 	}
-	diaChi, err := DocDiaChiTheoIdCSDL(idDiaChi)
+	diaChi, err := DocDiaChiTheoId(idDiaChi)
 	if err == nil {
 		noiBan.DiaChi = diaChi
 	}
-	dsID, err := DocNoiBanDacSanTheoNoiBanCSDL(noiBan.ID)
+	dsID, err := DocNoiBanDacSanTheoNoiBan(noiBan.ID)
 	if err == nil {
 		noiBan.DsDacSan = dsID
 	}

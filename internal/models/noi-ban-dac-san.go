@@ -1,6 +1,6 @@
 package models
 
-func DocNoiBanDacSanTheoDacSanCSDL(id int) ([]int, error) {
+func DocNoiBanDacSanTheoDacSan(id int) ([]int, error) {
 	dsID := []int{}
 
 	rows, err := db.Query("SELECT * FROM noi_ban_dac_san WHERE id_dac_san = ?", id)
@@ -24,7 +24,7 @@ func DocNoiBanDacSanTheoDacSanCSDL(id int) ([]int, error) {
 	return dsID, nil
 }
 
-func DocNoiBanDacSanTheoNoiBanCSDL(id int) ([]int, error) {
+func DocNoiBanDacSanTheoNoiBan(id int) ([]int, error) {
 	dsID := []int{}
 
 	rows, err := db.Query("SELECT * FROM noi_ban_dac_san WHERE id_noi_ban = ?", id)
@@ -48,12 +48,12 @@ func DocNoiBanDacSanTheoNoiBanCSDL(id int) ([]int, error) {
 	return dsID, nil
 }
 
-func ThemNoiBanDacSanCSDL(idNoiBan int, idDacSan int) error {
+func ThemNoiBanDacSan(idNoiBan int, idDacSan int) error {
 	_, err := db.Exec("INSERT INTO noi_ban_dac_san VALUES (?, ?)", idNoiBan, idDacSan)
 	return err
 }
 
-func XoaNoiBanDacSanCSDL(idNoiBan int, idDacSan int) error {
+func XoaNoiBanDacSan(idNoiBan int, idDacSan int) error {
 	_, err := db.Exec("DELETE FROM noi_ban_dac_san WHERE id_noi_ban = ? AND id_dac_san = ?", idDacSan, idDacSan)
 	return err
 }

@@ -5,7 +5,7 @@ type YeuThichDacSan struct {
 	IdDacSan    int    `json:"id_dac_san"`
 }
 
-func DocYeuThichDacSanTheoDacSanCSDL(idDacSan int) ([]YeuThichDacSan, error) {
+func DocYeuThichDacSanTheoDacSan(idDacSan int) ([]YeuThichDacSan, error) {
 	danhSachYeuThichDacSan := []YeuThichDacSan{}
 
 	rows, err := db.Query("SELECT * FROM danh_gia_dac_san WHERE id_dac_san = ?", idDacSan)
@@ -29,7 +29,7 @@ func DocYeuThichDacSanTheoDacSanCSDL(idDacSan int) ([]YeuThichDacSan, error) {
 	return danhSachYeuThichDacSan, nil
 }
 
-func DocYeuThichDacSanTheoNguoiDungCSDL(idNguoiDung string) ([]YeuThichDacSan, error) {
+func DocYeuThichDacSanTheoNguoiDung(idNguoiDung string) ([]YeuThichDacSan, error) {
 	danhSachYeuThichDacSan := []YeuThichDacSan{}
 
 	rows, err := db.Query("SELECT * FROM danh_gia_dac_san WHERE id_dac_san = ?", idNguoiDung)
@@ -53,18 +53,18 @@ func DocYeuThichDacSanTheoNguoiDungCSDL(idNguoiDung string) ([]YeuThichDacSan, e
 	return danhSachYeuThichDacSan, nil
 }
 
-func DocYeuThichDacSanCSDL(yeuThichDacSan YeuThichDacSan) error {
+func DocYeuThichDacSan(yeuThichDacSan YeuThichDacSan) error {
 	rows := db.QueryRow("SELECT * FROM yeu_thich_dac_san WHERE id_dac_san = ? AND id_nguoi_dung = ?", yeuThichDacSan.IdDacSan, yeuThichDacSan.IdNguoiDung)
 	err := rows.Scan(&yeuThichDacSan.IdDacSan, &yeuThichDacSan.IdNguoiDung)
 	return err
 }
 
-func ThemYeuThichDacSanCSDL(yeuThichDacSan YeuThichDacSan) error {
+func ThemYeuThichDacSan(yeuThichDacSan YeuThichDacSan) error {
 	_, err := db.Exec("INSERT INTO yeu_thich_dac_san VALUES (?, ?)", yeuThichDacSan.IdDacSan, yeuThichDacSan.IdNguoiDung)
 	return err
 }
 
-func XoaYeuThichDacSanCSDL(yeuThichDacSan YeuThichDacSan) error {
+func XoaYeuThichDacSan(yeuThichDacSan YeuThichDacSan) error {
 	_, err := db.Exec("DELETE FROM yeu_thich_dac_san WHERE id_nguoi_dung = ? AND id_dac_san = ?", yeuThichDacSan.IdNguoiDung, yeuThichDacSan.IdDacSan)
 	return err
 }

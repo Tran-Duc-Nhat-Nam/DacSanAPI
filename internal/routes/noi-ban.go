@@ -5,6 +5,7 @@ import (
 	"nam/dac_san_api/internal/models"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -40,6 +41,39 @@ func TimKiemNoiBanAPI(c *gin.Context) {
 		}
 		c.IndentedJSON(http.StatusOK, dacSan)
 	}
+}
+
+func XemNoiBan(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	idNguoiDung := c.Param("idnguoidung")
+	dacSan, err := models.DocNoiBanTheoId(id)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	err = models.ThemLuotXemNoiBan(models.LuotXemNoiBan{IdNguoiDung: idNguoiDung, IdNoiBan: id, ThoiGianXem: time.Now()})
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	c.IndentedJSON(http.StatusOK, dacSan)
+}
+
+func XemNoiBanKhach(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	dacSan, err := models.DocNoiBanTheoId(id)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	err = models.ThemLuotXemNoiBanKhach(id)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	c.IndentedJSON(http.StatusOK, dacSan)
 }
 
 func ThemNoiBanAPI(c *gin.Context) {

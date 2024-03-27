@@ -9,12 +9,12 @@ import (
 	"time"
 )
 
-func DocDacSanJson(c *gin.Context) {
+func DocDacSanAPI(c *gin.Context) {
 	dsDacSan, _ := models.DocDanhSachDacSan()
 	c.IndentedJSON(http.StatusOK, dsDacSan)
 }
 
-func DocTrangDacSanJson(c *gin.Context) {
+func DocTrangDacSanAPI(c *gin.Context) {
 	soTrang, err := strconv.Atoi(c.Param("index"))
 	if err != nil {
 		fmt.Print(err.Error())
@@ -128,7 +128,7 @@ func TimKiemDacSanTheoNguyenLieuAPI(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, dacSan)
 }
 
-func DocDacSanTheoIdJson(c *gin.Context) {
+func DocDacSanTheoIdAPI(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		fmt.Print(err.Error())
@@ -178,34 +178,34 @@ func DocDacSanTheoNoiBanAPI(c *gin.Context) {
 	if err != nil {
 		fmt.Print(err.Error())
 	}
-	dacSan, err := models.DocDacSanTheoNoiBanCSDL(id)
+	dacSan, err := models.DocDacSanTheoNoiBan(id)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
 	c.IndentedJSON(http.StatusOK, dacSan)
 }
 
-func DocDacSanTheoTenJson(c *gin.Context) {
+func DocDacSanTheoTenAPI(c *gin.Context) {
 	ten := c.Param("ten")
-	dacSan, err := models.DocDacSanTheoTenCSDL(ten)
+	dacSan, err := models.DocDacSanTheoTen(ten)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
 	c.IndentedJSON(http.StatusOK, dacSan)
 }
 
-func DocDacSanTheoMoTaJson(c *gin.Context) {
+func DocDacSanTheoMoTaAPI(c *gin.Context) {
 	moTa := c.Param("moTa")
-	dacSan, err := models.DocDacSanTheoMoTaCSDL(moTa)
+	dacSan, err := models.DocDacSanTheoMoTa(moTa)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
 	c.IndentedJSON(http.StatusOK, dacSan)
 }
 
-func DocDacSanTheoCachCheBienJson(c *gin.Context) {
+func DocDacSanTheoCachCheBienAPI(c *gin.Context) {
 	cachCheBien := c.Param("cachCheBien")
-	dacSan, err := models.DocDacSanTheoCachCheBienCSDL(cachCheBien)
+	dacSan, err := models.DocDacSanTheoCachCheBien(cachCheBien)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
@@ -414,7 +414,7 @@ func TimKiemDacSanTheoDieuKien(c *gin.Context) {
 	}
 }
 
-func ThemDacSanJson(c *gin.Context) {
+func ThemDacSanAPI(c *gin.Context) {
 	var dacSan models.DacSan
 
 	if err := c.BindJSON(&dacSan); err != nil {
@@ -422,7 +422,7 @@ func ThemDacSanJson(c *gin.Context) {
 		return
 	}
 
-	dacSan, err := models.ThemDacSanCSDL(dacSan)
+	dacSan, err := models.ThemDacSan(dacSan)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, dacSan)
@@ -431,7 +431,7 @@ func ThemDacSanJson(c *gin.Context) {
 	}
 }
 
-func CapNhatDacSanJson(c *gin.Context) {
+func CapNhatDacSanAPI(c *gin.Context) {
 	var dacSan models.DacSan
 
 	if err := c.BindJSON(&dacSan); err != nil {
@@ -448,7 +448,7 @@ func CapNhatDacSanJson(c *gin.Context) {
 	}
 }
 
-func XoaDacSanJson(c *gin.Context) {
+func XoaDacSanAPI(c *gin.Context) {
 	var Doc map[string]int
 
 	if err := c.BindJSON(&Doc); err != nil {
@@ -456,7 +456,7 @@ func XoaDacSanJson(c *gin.Context) {
 		return
 	}
 
-	err := models.XoaDacSanCSDL(Doc["id"])
+	err := models.XoaDacSan(Doc["id"])
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, false)

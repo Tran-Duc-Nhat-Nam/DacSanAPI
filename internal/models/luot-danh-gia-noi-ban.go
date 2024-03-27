@@ -14,12 +14,12 @@ type LuotDanhGiaNoiBan struct {
 	NoiDung         string    `json:"noi_dung"`
 }
 
-func DocLichSuDanhGiaNoiBanCSDL(idNguoiDung string) ([]LuotDanhGiaNoiBan, error) {
+func DocLichSuDanhGiaNoiBan(idNguoiDung string) ([]LuotDanhGiaNoiBan, error) {
 	lichSuDanhGia := []LuotDanhGiaNoiBan{}
 
-	rows, err := db.Query("SELECT * FROM luot_danh_gia_noi_ban WHERE id_nguoi_dung = " + idNguoiDung)
+	rows, err := db.Query("SELECT * FROM luot_danh_gia_noi_ban WHERE id_nguoi_dung = ?", idNguoiDung)
 	if err != nil {
-		return nil, err
+		return lichSuDanhGia, err
 	}
 	defer rows.Close()
 
@@ -27,7 +27,7 @@ func DocLichSuDanhGiaNoiBanCSDL(idNguoiDung string) ([]LuotDanhGiaNoiBan, error)
 		var luotDanhGia LuotDanhGiaNoiBan
 		var temp sql.NullString
 		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdNoiBan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia, &temp); err != nil {
-			return nil, err
+			return lichSuDanhGia, err
 		}
 		if temp.Valid {
 			luotDanhGia.NoiDung = temp.String
@@ -36,18 +36,18 @@ func DocLichSuDanhGiaNoiBanCSDL(idNguoiDung string) ([]LuotDanhGiaNoiBan, error)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return lichSuDanhGia, err
 	}
 
 	return lichSuDanhGia, nil
 }
 
-func DocDanhGiaNoiBanCSDL(idNoiBan int) ([]LuotDanhGiaNoiBan, error) {
+func DocDanhGiaNoiBan(idNoiBan int) ([]LuotDanhGiaNoiBan, error) {
 	lichSuDanhGia := []LuotDanhGiaNoiBan{}
 
 	rows, err := db.Query("SELECT * FROM luot_danh_gia_noi_ban WHERE id_noi_ban = ?", idNoiBan)
 	if err != nil {
-		return nil, err
+		return lichSuDanhGia, err
 	}
 	defer rows.Close()
 
@@ -55,7 +55,7 @@ func DocDanhGiaNoiBanCSDL(idNoiBan int) ([]LuotDanhGiaNoiBan, error) {
 		var luotDanhGia LuotDanhGiaNoiBan
 		var temp sql.NullString
 		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdNoiBan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia, &temp); err != nil {
-			return nil, err
+			return lichSuDanhGia, err
 		}
 		if temp.Valid {
 			luotDanhGia.NoiDung = temp.String
@@ -64,13 +64,13 @@ func DocDanhGiaNoiBanCSDL(idNoiBan int) ([]LuotDanhGiaNoiBan, error) {
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return lichSuDanhGia, err
 	}
 
 	return lichSuDanhGia, nil
 }
 
-func DocNoiBanTheoNguoiDungCSDL(idNoiBan int, idNguoiDung string) (LuotDanhGiaNoiBan, error) {
+func DocNoiBanTheoNguoiDung(idNoiBan int, idNguoiDung string) (LuotDanhGiaNoiBan, error) {
 	var luotDanhGia LuotDanhGiaNoiBan
 
 	rows := db.QueryRow("SELECT * FROM luot_danh_gia_noi_ban WHERE id_noi_ban = ? AND id_nguoi_dung = ?", idNoiBan, idNguoiDung)
@@ -86,7 +86,7 @@ func DocNoiBanTheoNguoiDungCSDL(idNoiBan int, idNguoiDung string) (LuotDanhGiaNo
 	return luotDanhGia, nil
 }
 
-func TinhDiemDanhGiaNoiBanCSDL(idNoiBan int) float64 {
+func TinhDiemDanhGiaNoiBan(idNoiBan int) float64 {
 	lichSuDanhGia := []LuotDanhGiaNoiBan{}
 	tongDiem := 0.0
 
@@ -116,22 +116,22 @@ func TinhDiemDanhGiaNoiBanCSDL(idNoiBan int) float64 {
 	return tongDiem / float64(len(lichSuDanhGia))
 }
 
-func ThemDanhGiaNoiBanCSDL(luotDanhGia LuotDanhGiaNoiBan) error {
-	_, err := DocNoiBanTheoNguoiDungCSDL(luotDanhGia.IdNoiBan, luotDanhGia.IdNguoiDung)
+func ThemDanhGiaNoiBan(luotDanhGia LuotDanhGiaNoiBan) error {
+	_, err := DocNoiBanTheoNguoiDung(luotDanhGia.IdNoiBan, luotDanhGia.IdNguoiDung)
 	if err != nil {
 		_, err = db.Exec("INSERT INTO luot_danh_gia_noi_ban VALUES (?, ?, ?, ?, ?)", luotDanhGia.IdNguoiDung, luotDanhGia.IdNoiBan, luotDanhGia.ThoiGianDanhGia, luotDanhGia.DiemDanhGia, luotDanhGia.NoiDung)
 		return err
 	} else {
-		return CapNhatDanhGiaNoiBanCSDL(luotDanhGia)
+		return CapNhatDanhGiaNoiBan(luotDanhGia)
 	}
 }
 
-func CapNhatDanhGiaNoiBanCSDL(luotDanhGia LuotDanhGiaNoiBan) error {
+func CapNhatDanhGiaNoiBan(luotDanhGia LuotDanhGiaNoiBan) error {
 	_, err := db.Exec("UPDATE luot_danh_gia_noi_ban SET thoi_gian_danh_gia = ?, diem_danh_gia = ?, noi_dung = ? WHERE id_nguoi_dung = ? AND id_noi_ban = ?", luotDanhGia.ThoiGianDanhGia, luotDanhGia.DiemDanhGia, luotDanhGia.NoiDung, luotDanhGia.IdNguoiDung, luotDanhGia.IdNoiBan)
 	return err
 }
 
-func XoaDanhGiaNoiBanCSDL(idNguoiDung int, idNoiBan int) error {
+func XoaDanhGiaNoiBan(idNguoiDung int, idNoiBan int) error {
 	_, err := db.Exec("DELETE FROM luot_danh_gia_noi_ban WHERE id_nguoi_dung = ? AND id_noi_ban = ?", idNguoiDung, idNoiBan)
 	return err
 }

@@ -9,24 +9,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DocHinhAnhTheoIdJson(c *gin.Context) {
+func DocHinhAnhTheoIdAPI(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		fmt.Print(err.Error())
 	}
-	hinhAnh, err := models.DocHinhAnhTheoIdCSDL(id)
+	hinhAnh, err := models.DocHinhAnhTheoId(id)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
 	c.IndentedJSON(http.StatusOK, hinhAnh)
 }
 
-func DocHinhAnhDacSanJson(c *gin.Context) {
+func DocHinhAnhDacSanAPI(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		fmt.Print(err.Error())
 	}
-	hinhAnh, err := models.DocHinhAnhDacSanCSDL(id)
+	hinhAnh, err := models.DocHinhAnhDacSan(id)
 	if err != nil {
 		fmt.Print(err.Error())
 	}

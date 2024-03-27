@@ -7,7 +7,7 @@ type VungMien struct {
 	Ten string `json:"ten"`
 }
 
-func DocVungMienCSDL() ([]VungMien, error) {
+func DocVungMien() ([]VungMien, error) {
 	dsVungMien := []VungMien{}
 
 	rows, err := db.Query("SELECT * FROM vung_mien ORDER BY id ASC")
@@ -31,7 +31,7 @@ func DocVungMienCSDL() ([]VungMien, error) {
 	return dsVungMien, nil
 }
 
-func DocVungMienTheoIdCSDL(id int) (VungMien, error) {
+func DocVungMienTheoId(id int) (VungMien, error) {
 	var vungMien VungMien
 
 	row := db.QueryRow("SELECT * FROM vung_mien WHERE id = ?", id)
@@ -43,7 +43,7 @@ func DocVungMienTheoIdCSDL(id int) (VungMien, error) {
 	return vungMien, nil
 }
 
-func DocVungMienDacSanCSDL(id int) ([]VungMien, error) {
+func DocVungMienDacSan(id int) ([]VungMien, error) {
 	dsVungMien := []VungMien{}
 
 	rows, err := db.Query("SELECT * FROM dac_san_thuoc_vung WHERE id_dac_san = " + strconv.Itoa(id) + " ORDER BY id_dac_san ASC")
@@ -57,7 +57,7 @@ func DocVungMienDacSanCSDL(id int) ([]VungMien, error) {
 		if err := rows.Scan(&id, &idVungMien); err != nil {
 			return dsVungMien, err
 		}
-		vungMien, err := DocVungMienTheoIdCSDL(idVungMien)
+		vungMien, err := DocVungMienTheoId(idVungMien)
 		if err != nil {
 			return dsVungMien, err
 		}
@@ -71,7 +71,7 @@ func DocVungMienDacSanCSDL(id int) ([]VungMien, error) {
 	return dsVungMien, nil
 }
 
-func ThemVungMienCSDL(vungMien VungMien) (VungMien, error) {
+func ThemVungMien(vungMien VungMien) (VungMien, error) {
 	var count int
 	db.QueryRow("SELECT MAX(id) FROM vung_mien").Scan(&count)
 	count++
@@ -80,12 +80,12 @@ func ThemVungMienCSDL(vungMien VungMien) (VungMien, error) {
 	return vungMien, err
 }
 
-func CapNhatVungMienCSDL(vungMien VungMien) error {
+func CapNhatVungMien(vungMien VungMien) error {
 	_, err := db.Exec("UPDATE vung_mien SET ten = ? WHERE id = ?", vungMien.Ten, vungMien.ID)
 	return err
 }
 
-func XoaVungMienCSDL(id int) error {
+func XoaVungMien(id int) error {
 	_, err := db.Exec("DELETE FROM vung_mien WHERE id = ?", id)
 	return err
 }

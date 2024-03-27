@@ -18,7 +18,7 @@ func YeuThichDacSanAPI(c *gin.Context) {
 	}
 	idNguoiDung := c.Param("idNguoiDung")
 
-	if err := models.ThemYeuThichDacSanCSDL(models.YeuThichDacSan{IdNguoiDung: idNguoiDung, IdDacSan: idDacSan}); err != nil {
+	if err := models.ThemYeuThichDacSan(models.YeuThichDacSan{IdNguoiDung: idNguoiDung, IdDacSan: idDacSan}); err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())
 		return
@@ -36,7 +36,7 @@ func BoYeuThichDacSanAPI(c *gin.Context) {
 	}
 	idNguoiDung := c.Param("idNguoiDung")
 
-	if err := models.XoaYeuThichDacSanCSDL(models.YeuThichDacSan{IdNguoiDung: idNguoiDung, IdDacSan: idDacSan}); err != nil {
+	if err := models.XoaYeuThichDacSan(models.YeuThichDacSan{IdNguoiDung: idNguoiDung, IdDacSan: idDacSan}); err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())
 		return
@@ -54,7 +54,7 @@ func DocYeuThichDacSanAPI(c *gin.Context) {
 	}
 	idNguoiDung := c.Param("idNguoiDung")
 
-	if err := models.DocYeuThichDacSanCSDL(models.YeuThichDacSan{IdNguoiDung: idNguoiDung, IdDacSan: idDacSan}); err != nil {
+	if err := models.DocYeuThichDacSan(models.YeuThichDacSan{IdNguoiDung: idNguoiDung, IdDacSan: idDacSan}); err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())
 		return
