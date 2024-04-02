@@ -16,7 +16,7 @@ func DocYeuThichDacSanTheoDacSan(idDacSan int) ([]YeuThichDacSan, error) {
 
 	for rows.Next() {
 		var yeuThichDacSan YeuThichDacSan
-		if err := rows.Scan(&yeuThichDacSan.IdNguoiDung, &yeuThichDacSan.IdDacSan); err != nil {
+		if err := rows.Scan(&yeuThichDacSan.IdDacSan, &yeuThichDacSan.IdNguoiDung); err != nil {
 			return nil, err
 		}
 		danhSachYeuThichDacSan = append(danhSachYeuThichDacSan, yeuThichDacSan)
@@ -32,25 +32,42 @@ func DocYeuThichDacSanTheoDacSan(idDacSan int) ([]YeuThichDacSan, error) {
 func DocYeuThichDacSanTheoNguoiDung(idNguoiDung string) ([]YeuThichDacSan, error) {
 	danhSachYeuThichDacSan := []YeuThichDacSan{}
 
-	rows, err := db.Query("SELECT * FROM danh_gia_dac_san WHERE id_dac_san = ?", idNguoiDung)
+	rows, err := db.Query("SELECT * FROM yeu_thich_dac_san WHERE id_nguoi_dung = ?", idNguoiDung)
 	if err != nil {
-		return nil, err
+		return danhSachYeuThichDacSan, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		var yeuThichDacSan YeuThichDacSan
-		if err := rows.Scan(&yeuThichDacSan.IdNguoiDung, &yeuThichDacSan.IdDacSan); err != nil {
-			return nil, err
+		if err := rows.Scan(&yeuThichDacSan.IdDacSan, &yeuThichDacSan.IdNguoiDung); err != nil {
+			return danhSachYeuThichDacSan, err
 		}
 		danhSachYeuThichDacSan = append(danhSachYeuThichDacSan, yeuThichDacSan)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return danhSachYeuThichDacSan, err
 	}
 
-	return danhSachYeuThichDacSan, nil
+	return danhSachYeuThichDacSan, err
+}
+
+func DocDanhSachDacSanYeuThich(idNguoiDung string) ([]DacSan, error) {
+	danhSachDacSan := []DacSan{}
+
+	danhSachYeuThichDacSan, err := DocYeuThichDacSanTheoNguoiDung(idNguoiDung)
+
+	if err == nil {
+		for _, item := range danhSachYeuThichDacSan {
+			dacSan, err := DocDacSanTheoId(item.IdDacSan)
+			if err == nil {
+				danhSachDacSan = append(danhSachDacSan, dacSan)
+			}
+
+		}
+	}
+	return danhSachDacSan, err
 }
 
 func DocYeuThichDacSan(yeuThichDacSan YeuThichDacSan) error {

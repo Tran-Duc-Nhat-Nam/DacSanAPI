@@ -8,7 +8,7 @@ type YeuThichNoiBan struct {
 func DocYeuThichNoiBanTheoNoiBan(idNoiBan int) ([]YeuThichNoiBan, error) {
 	danhSachYeuThichNoiBan := []YeuThichNoiBan{}
 
-	rows, err := db.Query("SELECT * FROM danh_gia_noi_ban WHERE id_noi_ban = ?", idNoiBan)
+	rows, err := db.Query("SELECT * FROM yeu_thich_noi_ban WHERE id_noi_ban = ?", idNoiBan)
 	if err != nil {
 		return nil, err
 	}
@@ -32,9 +32,9 @@ func DocYeuThichNoiBanTheoNoiBan(idNoiBan int) ([]YeuThichNoiBan, error) {
 func DocYeuThichNoiBanTheoNguoiDung(idNguoiDung string) ([]YeuThichNoiBan, error) {
 	danhSachYeuThichNoiBan := []YeuThichNoiBan{}
 
-	rows, err := db.Query("SELECT * FROM danh_gia_noi_ban WHERE id_noi_ban = ?", idNguoiDung)
+	rows, err := db.Query("SELECT * FROM yeu_thich_noi_ban WHERE id_noi_ban = ?", idNguoiDung)
 	if err != nil {
-		return nil, err
+		return danhSachYeuThichNoiBan, err
 	}
 	defer rows.Close()
 
@@ -47,10 +47,27 @@ func DocYeuThichNoiBanTheoNguoiDung(idNguoiDung string) ([]YeuThichNoiBan, error
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return danhSachYeuThichNoiBan, err
 	}
 
-	return danhSachYeuThichNoiBan, nil
+	return danhSachYeuThichNoiBan, err
+}
+
+func DocDanhSachNoiBanYeuThich(idNguoiDung string) ([]NoiBan, error) {
+	danhSachNoiBan := []NoiBan{}
+
+	danhSachYeuThichNoiBan, err := DocYeuThichNoiBanTheoNguoiDung(idNguoiDung)
+
+	if err == nil {
+		for _, item := range danhSachYeuThichNoiBan {
+			noiBan, err := DocNoiBanTheoId(item.IdNoiBan)
+			if err == nil {
+				danhSachNoiBan = append(danhSachNoiBan, noiBan)
+			}
+
+		}
+	}
+	return danhSachNoiBan, err
 }
 
 func DocYeuThichNoiBan(yeuThichNoiBan YeuThichNoiBan) error {

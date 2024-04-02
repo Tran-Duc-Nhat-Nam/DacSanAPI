@@ -48,7 +48,7 @@ func XemNoiBan(c *gin.Context) {
 	if err != nil {
 		fmt.Print(err.Error())
 	}
-	idNguoiDung := c.Param("idnguoidung")
+	idNguoiDung := c.Param("idNguoiDung")
 	dacSan, err := models.DocNoiBanTheoId(id)
 	if err != nil {
 		fmt.Print(err.Error())

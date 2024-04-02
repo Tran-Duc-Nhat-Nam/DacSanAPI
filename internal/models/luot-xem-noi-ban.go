@@ -34,11 +34,21 @@ func DocLichSuXemNoiBan(idNguoiDung string) ([]LuotXemNoiBan, error) {
 	return lichSuXem, nil
 }
 
-func DemLuotXemNoiBan(idNguoiDung string) (int, error) {
-	soLuotXem := -1
-	row := db.QueryRow("SELECT COUNT(*) FROM luot_xem_noi_ban WHERE id_nguoi_dung = ?", idNguoiDung)
-	err := row.Scan(&soLuotXem)
-	return soLuotXem, err
+func DocDanhSachNoiBanDaXem(idNguoiDung string) ([]NoiBan, error) {
+	danhSachNoiBan := []NoiBan{}
+
+	danhSachYeuThichNoiBan, err := DocLichSuXemNoiBan(idNguoiDung)
+
+	if err == nil {
+		for _, item := range danhSachYeuThichNoiBan {
+			noiBan, err := DocNoiBanTheoId(item.IdNoiBan)
+			if err == nil {
+				danhSachNoiBan = append(danhSachNoiBan, noiBan)
+			}
+
+		}
+	}
+	return danhSachNoiBan, err
 }
 
 func ThemLuotXemNoiBan(luotXem LuotXemNoiBan) error {

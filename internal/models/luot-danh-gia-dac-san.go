@@ -17,7 +17,7 @@ type LuotDanhGiaDacSan struct {
 func DocLichSuDanhGiaDacSan(idNguoiDung string) ([]LuotDanhGiaDacSan, error) {
 	lichSuDanhGia := []LuotDanhGiaDacSan{}
 
-	rows, err := db.Query("SELECT * FROM danh_gia_dac_san WHERE id_nguoi_dung = ?", idNguoiDung)
+	rows, err := db.Query("SELECT * FROM luot_danh_gia_dac_san WHERE id_nguoi_dung = ?", idNguoiDung)
 	if err != nil {
 		return lichSuDanhGia, err
 	}
@@ -70,7 +70,24 @@ func DocDanhSachDanhGiaDacSan(idDacSan int) ([]LuotDanhGiaDacSan, error) {
 	return lichSuDanhGia, nil
 }
 
-func DocDacSanTheoNguoiDung(idDacSan int, idNguoiDung string) (LuotDanhGiaDacSan, error) {
+func DocDanhSachDacSanDaDanhGia(idNguoiDung string) ([]DacSan, error) {
+	danhSachDacSan := []DacSan{}
+
+	danhSachYeuThichDacSan, err := DocLichSuDanhGiaDacSan(idNguoiDung)
+
+	if err == nil {
+		for _, item := range danhSachYeuThichDacSan {
+			dacSan, err := DocDacSanTheoId(item.IdDacSan)
+			if err == nil {
+				danhSachDacSan = append(danhSachDacSan, dacSan)
+			}
+
+		}
+	}
+	return danhSachDacSan, err
+}
+
+func DocDanhGiaDacSanTheoNguoiDung(idDacSan int, idNguoiDung string) (LuotDanhGiaDacSan, error) {
 	var luotDanhGia LuotDanhGiaDacSan
 
 	rows := db.QueryRow("SELECT * FROM luot_danh_gia_dac_san WHERE id_dac_san = ? AND id_nguoi_dung = ?", idDacSan, idNguoiDung)
@@ -117,7 +134,7 @@ func TinhDiemDanhGiaDacSan(idDacSan int) float64 {
 }
 
 func ThemDanhGiaDacSan(luotDanhGia LuotDanhGiaDacSan) error {
-	_, err := DocDacSanTheoNguoiDung(luotDanhGia.IdDacSan, luotDanhGia.IdNguoiDung)
+	_, err := DocDanhGiaDacSanTheoNguoiDung(luotDanhGia.IdDacSan, luotDanhGia.IdNguoiDung)
 	if err != nil {
 		_, err = db.Exec("INSERT INTO luot_danh_gia_dac_san VALUES (?, ?, ?, ?, ?)", luotDanhGia.IdNguoiDung, luotDanhGia.IdDacSan, luotDanhGia.ThoiGianDanhGia, luotDanhGia.DiemDanhGia, luotDanhGia.NoiDung)
 		return err

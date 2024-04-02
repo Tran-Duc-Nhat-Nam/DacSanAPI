@@ -62,3 +62,16 @@ func DocYeuThichNoiBanAPI(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusOK, true)
 }
+
+func DocDanhSachNoiBanYeuThichAPI(c *gin.Context) {
+	idNguoiDung := c.Param("idNguoiDung")
+
+	ds, err := models.DocDanhSachNoiBanYeuThich(idNguoiDung)
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, ds)
+}

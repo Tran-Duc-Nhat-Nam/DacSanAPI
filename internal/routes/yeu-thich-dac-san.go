@@ -62,3 +62,29 @@ func DocYeuThichDacSanAPI(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusOK, true)
 }
+
+func DocYeuThichDacSanTheoNguoiDungAPI(c *gin.Context) {
+	idNguoiDung := c.Param("idNguoiDung")
+
+	ds, err := models.DocYeuThichDacSanTheoNguoiDung(idNguoiDung)
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, ds)
+}
+
+func DocDanhSachDacSanYeuThichAPI(c *gin.Context) {
+	idNguoiDung := c.Param("idNguoiDung")
+
+	ds, err := models.DocDanhSachDacSanYeuThich(idNguoiDung)
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, ds)
+}

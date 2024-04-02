@@ -24,7 +24,7 @@ func main() {
 	router.PUT("/dacsan", routes.CapNhatDacSanAPI)
 	router.DELETE("/dacsan", routes.XoaDacSanAPI)
 	router.GET("/dacsan/:id", routes.DocDacSanTheoIdAPI)
-	router.GET("/dacsan/:id/nguoidung=:idnguoidung", routes.XemDacSan)
+	router.GET("/dacsan/:id/nguoidung=:idNguoiDung", routes.XemDacSan)
 	router.GET("/dacsan/:id/chitiet", routes.XemDacSanKhach)
 	router.GET("/dacsan/ten=:ten", routes.DocDacSanTheoTenAPI)
 	router.GET("/dacsan/mota=:mota", routes.DocDacSanTheoMoTaAPI)
@@ -47,6 +47,7 @@ func main() {
 	router.GET("/danhgia/dacsan=:idDacSan/nguoidung=:idNguoiDung", routes.DocDanhGiaDacSanTheoNguoiDungAPI)
 	router.POST("/danhgia/dacsan=:idDacSan", routes.DanhGiaDacSanAPI)
 	// Yêu thích đặc sản
+	router.GET("/yeuthich/dacsan/nguoidung=:idNguoiDung", routes.DocDanhSachDacSanYeuThichAPI)
 	router.GET("/yeuthich/dacsan=:idDacSan/nguoidung=:idNguoiDung", routes.DocYeuThichDacSanAPI)
 	router.POST("/yeuthich/dacsan=:idDacSan/nguoidung=:idNguoiDung", routes.YeuThichDacSanAPI)
 	router.DELETE("/yeuthich/dacsan=:idDacSan/nguoidung=:idNguoiDung", routes.BoYeuThichDacSanAPI)
@@ -55,6 +56,7 @@ func main() {
 	router.GET("/danhgia/noiban=:idNoiBan/nguoidung=:idNguoiDung", routes.DocDanhGiaNoiBanTheoNguoiDungAPI)
 	router.POST("/danhgia/noiban=:idNoiBan", routes.DanhGiaNoiBanAPI)
 	// Yêu thích nơi bán
+	router.GET("/yeuthich/noiban/nguoidung=:idNguoiDung", routes.DocDanhSachNoiBanYeuThichAPI)
 	router.GET("/yeuthich/noiban=:idNoiBan/nguoidung=:idNguoiDung", routes.DocYeuThichNoiBanAPI)
 	router.POST("/yeuthich/noiban=:idNoiBan/nguoidung=:idNguoiDung", routes.YeuThichNoiBanAPI)
 	router.DELETE("/yeuthich/noiban=:idNoiBan/nguoidung=:idNguoiDung", routes.BoYeuThichNoiBanAPI)
@@ -64,7 +66,7 @@ func main() {
 	router.PUT("/noiban", routes.CapNhatNoiBanAPI)
 	router.DELETE("/noiban", routes.XoaNoiBanAPI)
 	router.GET("/noiban/:id", routes.DocNoiBanTheoIdAPI)
-	router.GET("/noiban/:id/nguoidung=:idnguoidung", routes.XemNoiBan)
+	router.GET("/noiban/:id/nguoidung=:idNguoiDung", routes.XemNoiBan)
 	router.GET("/noiban/:id/chitiet", routes.XemNoiBanKhach)
 	router.GET("/noiban/ten=:ten/size=:size/index=:index", routes.TimKiemNoiBanAPI)
 	// Địa chỉ
@@ -101,6 +103,9 @@ func main() {
 	router.DELETE("/nguoidung", routes.XoaNguoiDungAPI)
 	router.GET("/nguoidung/:id", routes.DocNguoiDungTheoIdAPI)
 	router.GET("/nguoidung/ten=:ten/size=:size/index=:index", routes.TimKiemNguoiDungAPI)
+	// Lịch sử xem
+	router.GET("/lichsu/dacsan/nguoidung=:idNguoiDung", routes.DocDanhSachDacSanDaXemAPI)
+	router.GET("/lichsu/noiban/nguoidung=:idNguoiDung", routes.DocDanhSachNoiBanDaXemAPI)
 
 	router.Run()
 }

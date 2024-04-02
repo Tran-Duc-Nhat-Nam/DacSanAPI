@@ -40,7 +40,7 @@ func DocDanhGiaDacSanTheoNguoiDungAPI(c *gin.Context) {
 		return
 	}
 	idNguoiDung := c.Param("idNguoiDung")
-	diem, err := models.DocDacSanTheoNguoiDung(id, idNguoiDung)
+	diem, err := models.DocDanhGiaDacSanTheoNguoiDung(id, idNguoiDung)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())

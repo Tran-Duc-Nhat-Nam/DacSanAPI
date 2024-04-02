@@ -145,7 +145,7 @@ func XemDacSan(c *gin.Context) {
 	if err != nil {
 		fmt.Print(err.Error())
 	}
-	idNguoiDung := c.Param("idnguoidung")
+	idNguoiDung := c.Param("idNguoiDung")
 	dacSan, err := models.DocDacSanTheoId(id)
 	if err != nil {
 		fmt.Print(err.Error())
