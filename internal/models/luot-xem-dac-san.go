@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -10,10 +11,8 @@ type LuotXemDacSan struct {
 	ThoiGianXem time.Time `json:"thoi_gian"`
 }
 
-func DocLichSuXemDacSan(idNguoiDung string) ([]LuotXemDacSan, error) {
+func DocLuotXemDacSan(rows *sql.Rows, err error) ([]LuotXemDacSan, error) {
 	lichSuXem := []LuotXemDacSan{}
-
-	rows, err := db.Query("SELECT * FROM luot_xem_dac_san WHERE id_nguoi_dung = ?", idNguoiDung)
 	if err != nil {
 		return lichSuXem, err
 	}
@@ -34,10 +33,35 @@ func DocLichSuXemDacSan(idNguoiDung string) ([]LuotXemDacSan, error) {
 	return lichSuXem, nil
 }
 
+func DocLichSuXemDacSan(idNguoiDung string) ([]LuotXemDacSan, error) {
+	return DocLuotXemDacSan(db.Query("SELECT * FROM luot_xem_dac_san WHERE id_nguoi_dung = ?", idNguoiDung))
+}
+
+func TimKiemLichSuXemDacSan(soTrang int, doDaiTrang int, idNguoiDung string) ([]LuotXemDacSan, error) {
+	return DocLuotXemDacSan(db.Query("SELECT * FROM luot_xem_dac_san WHERE id_nguoi_dung = ? ORDER BY id_nguoi_dung ASC LIMIT ?, ?", idNguoiDung, soTrang*doDaiTrang, doDaiTrang))
+}
+
 func DocDanhSachDacSanDaXem(idNguoiDung string) ([]DacSan, error) {
 	danhSachDacSan := []DacSan{}
 
 	danhSachYeuThichDacSan, err := DocLichSuXemDacSan(idNguoiDung)
+
+	if err == nil {
+		for _, item := range danhSachYeuThichDacSan {
+			dacSan, err := DocDacSanTheoId(item.IdDacSan)
+			if err == nil {
+				danhSachDacSan = append(danhSachDacSan, dacSan)
+			}
+
+		}
+	}
+	return danhSachDacSan, err
+}
+
+func TimKiemDanhSachDacSanDaXem(soTrang int, doDaiTrang int, idNguoiDung string) ([]DacSan, error) {
+	danhSachDacSan := []DacSan{}
+
+	danhSachYeuThichDacSan, err := TimKiemLichSuXemDacSan(soTrang, doDaiTrang, idNguoiDung)
 
 	if err == nil {
 		for _, item := range danhSachYeuThichDacSan {

@@ -37,11 +37,11 @@ func DocYeuThichDacSanTheoNguoiDung(idNguoiDung string) ([]YeuThichDacSan, error
 }
 
 func TimKiemYeuThichDacSanTheoDacSan(soTrang int, doDaiTrang int, idDacSan int) ([]YeuThichDacSan, error) {
-	return DocYeuThichDacSan(db.Query("SELECT * FROM danh_gia_dac_san WHERE id_dac_san = ? ORDER BY id ASC LIMIT ?, ?", idDacSan, soTrang*doDaiTrang, doDaiTrang))
+	return DocYeuThichDacSan(db.Query("SELECT * FROM yeu_thich_dac_san WHERE id_dac_san = ? ORDER BY id_dac_san ASC LIMIT ?, ?", idDacSan, soTrang*doDaiTrang, doDaiTrang))
 }
 
 func TimKiemYeuThichDacSanTheoNguoiDung(soTrang int, doDaiTrang int, idNguoiDung string) ([]YeuThichDacSan, error) {
-	return DocYeuThichDacSan(db.Query("SELECT * FROM danh_gia_dac_san WHERE id_nguoi_dung = ? ORDER BY id ASC LIMIT ?, ?", idNguoiDung, soTrang*doDaiTrang, doDaiTrang))
+	return DocYeuThichDacSan(db.Query("SELECT * FROM yeu_thich_dac_san WHERE id_nguoi_dung = ? ORDER BY id_dac_san ASC LIMIT ?, ?", idNguoiDung, soTrang*doDaiTrang, doDaiTrang))
 }
 
 func DocDanhSachDacSanYeuThich(idNguoiDung string) ([]DacSan, error) {
