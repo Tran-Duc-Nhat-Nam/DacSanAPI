@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"strconv"
 	"time"
 )
 
@@ -14,10 +13,8 @@ type LuotDanhGiaNoiBan struct {
 	NoiDung         string    `json:"noi_dung"`
 }
 
-func DocLichSuDanhGiaNoiBan(idNguoiDung string) ([]LuotDanhGiaNoiBan, error) {
+func DocLuotDanhGiaNoiBan(rows *sql.Rows, err error) ([]LuotDanhGiaNoiBan, error) {
 	lichSuDanhGia := []LuotDanhGiaNoiBan{}
-
-	rows, err := db.Query("SELECT * FROM luot_danh_gia_noi_ban WHERE id_nguoi_dung = ?", idNguoiDung)
 	if err != nil {
 		return lichSuDanhGia, err
 	}
@@ -38,36 +35,15 @@ func DocLichSuDanhGiaNoiBan(idNguoiDung string) ([]LuotDanhGiaNoiBan, error) {
 	if err := rows.Err(); err != nil {
 		return lichSuDanhGia, err
 	}
-
 	return lichSuDanhGia, nil
 }
 
+func DocLichSuDanhGiaNoiBan(idNguoiDung string) ([]LuotDanhGiaNoiBan, error) {
+	return DocLuotDanhGiaNoiBan(db.Query("SELECT * FROM luot_danh_gia_noi_ban WHERE id_nguoi_dung = ?", idNguoiDung))
+}
+
 func DocDanhGiaNoiBan(idNoiBan int) ([]LuotDanhGiaNoiBan, error) {
-	lichSuDanhGia := []LuotDanhGiaNoiBan{}
-
-	rows, err := db.Query("SELECT * FROM luot_danh_gia_noi_ban WHERE id_noi_ban = ?", idNoiBan)
-	if err != nil {
-		return lichSuDanhGia, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var luotDanhGia LuotDanhGiaNoiBan
-		var temp sql.NullString
-		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdNoiBan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia, &temp); err != nil {
-			return lichSuDanhGia, err
-		}
-		if temp.Valid {
-			luotDanhGia.NoiDung = temp.String
-		}
-		lichSuDanhGia = append(lichSuDanhGia, luotDanhGia)
-	}
-
-	if err := rows.Err(); err != nil {
-		return lichSuDanhGia, err
-	}
-
-	return lichSuDanhGia, nil
+	return DocLuotDanhGiaNoiBan(db.Query("SELECT * FROM luot_danh_gia_noi_ban WHERE id_noi_ban = ?", idNoiBan))
 }
 
 func DocNoiBanTheoNguoiDung(idNoiBan int, idNguoiDung string) (LuotDanhGiaNoiBan, error) {
@@ -86,36 +62,6 @@ func DocNoiBanTheoNguoiDung(idNoiBan int, idNguoiDung string) (LuotDanhGiaNoiBan
 	return luotDanhGia, nil
 }
 
-func TinhDiemDanhGiaNoiBan(idNoiBan int) float64 {
-	lichSuDanhGia := []LuotDanhGiaNoiBan{}
-	tongDiem := 0.0
-
-	rows, err := db.Query("SELECT * FROM luot_danh_gia_noi_ban WHERE id_noi_ban = " + strconv.Itoa(idNoiBan))
-	if err != nil {
-		return -1
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var luotDanhGia LuotDanhGiaNoiBan
-		var temp sql.NullString
-		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdNoiBan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia, &temp); err != nil {
-			return -1
-		}
-		if temp.Valid {
-			luotDanhGia.NoiDung = temp.String
-		}
-		lichSuDanhGia = append(lichSuDanhGia, luotDanhGia)
-		tongDiem += float64(luotDanhGia.DiemDanhGia)
-	}
-
-	if err := rows.Err(); err != nil {
-		return -1
-	}
-
-	return tongDiem / float64(len(lichSuDanhGia))
-}
-
 func ThemDanhGiaNoiBan(luotDanhGia LuotDanhGiaNoiBan) error {
 	_, err := DocNoiBanTheoNguoiDung(luotDanhGia.IdNoiBan, luotDanhGia.IdNguoiDung)
 	if err != nil {
@@ -131,7 +77,7 @@ func CapNhatDanhGiaNoiBan(luotDanhGia LuotDanhGiaNoiBan) error {
 	return err
 }
 
-func XoaDanhGiaNoiBan(idNguoiDung int, idNoiBan int) error {
-	_, err := db.Exec("DELETE FROM luot_danh_gia_noi_ban WHERE id_nguoi_dung = ? AND id_noi_ban = ?", idNguoiDung, idNoiBan)
+func XoaDanhGiaNoiBan(idNguoiDung string, idDacSan int) error {
+	_, err := db.Exec("DELETE FROM luot_danh_gia_noi_ban WHERE id_nguoi_dung = ? AND id_noi_ban = ?", idNguoiDung, idDacSan)
 	return err
 }

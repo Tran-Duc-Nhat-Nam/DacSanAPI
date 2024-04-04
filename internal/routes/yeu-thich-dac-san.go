@@ -54,7 +54,7 @@ func DocYeuThichDacSanAPI(c *gin.Context) {
 	}
 	idNguoiDung := c.Param("idNguoiDung")
 
-	if err := models.DocYeuThichDacSan(models.YeuThichDacSan{IdNguoiDung: idNguoiDung, IdDacSan: idDacSan}); err != nil {
+	if err := models.DocYeuThichDacSanTheoID(models.YeuThichDacSan{IdNguoiDung: idNguoiDung, IdDacSan: idDacSan}); err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())
 		return
@@ -63,10 +63,20 @@ func DocYeuThichDacSanAPI(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, true)
 }
 
-func DocYeuThichDacSanTheoNguoiDungAPI(c *gin.Context) {
+func TimKiemDanhSachDacSanYeuThichAPI(c *gin.Context) {
+	soTrang, err := strconv.Atoi(c.Param("index"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
+	kichThuocTrang, err := strconv.Atoi(c.Param("size"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+	}
 	idNguoiDung := c.Param("idNguoiDung")
 
-	ds, err := models.DocYeuThichDacSanTheoNguoiDung(idNguoiDung)
+	ds, err := models.TimKiemDanhSachDacSanYeuThich(soTrang, kichThuocTrang, idNguoiDung)
 	if err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())

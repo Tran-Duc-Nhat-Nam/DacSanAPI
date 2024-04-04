@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"strconv"
 	"time"
 )
 
@@ -14,10 +13,8 @@ type LuotDanhGiaDacSan struct {
 	NoiDung         string    `json:"noi_dung"`
 }
 
-func DocLichSuDanhGiaDacSan(idNguoiDung string) ([]LuotDanhGiaDacSan, error) {
+func DocLuotDanhGiaDacSan(rows *sql.Rows, err error) ([]LuotDanhGiaDacSan, error) {
 	lichSuDanhGia := []LuotDanhGiaDacSan{}
-
-	rows, err := db.Query("SELECT * FROM luot_danh_gia_dac_san WHERE id_nguoi_dung = ?", idNguoiDung)
 	if err != nil {
 		return lichSuDanhGia, err
 	}
@@ -38,36 +35,15 @@ func DocLichSuDanhGiaDacSan(idNguoiDung string) ([]LuotDanhGiaDacSan, error) {
 	if err := rows.Err(); err != nil {
 		return lichSuDanhGia, err
 	}
-
 	return lichSuDanhGia, nil
 }
 
+func DocLichSuDanhGiaDacSan(idNguoiDung string) ([]LuotDanhGiaDacSan, error) {
+	return DocLuotDanhGiaDacSan(db.Query("SELECT * FROM luot_danh_gia_dac_san WHERE id_nguoi_dung = ?", idNguoiDung))
+}
+
 func DocDanhSachDanhGiaDacSan(idDacSan int) ([]LuotDanhGiaDacSan, error) {
-	lichSuDanhGia := []LuotDanhGiaDacSan{}
-
-	rows, err := db.Query("SELECT * FROM luot_danh_gia_dac_san WHERE id_dac_san = ?", idDacSan)
-	if err != nil {
-		return lichSuDanhGia, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var luotDanhGia LuotDanhGiaDacSan
-		var temp sql.NullString
-		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdDacSan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia, &temp); err != nil {
-			return lichSuDanhGia, err
-		}
-		if temp.Valid {
-			luotDanhGia.NoiDung = temp.String
-		}
-		lichSuDanhGia = append(lichSuDanhGia, luotDanhGia)
-	}
-
-	if err := rows.Err(); err != nil {
-		return lichSuDanhGia, err
-	}
-
-	return lichSuDanhGia, nil
+	return DocLuotDanhGiaDacSan(db.Query("SELECT * FROM luot_danh_gia_dac_san WHERE id_dac_san = ?", idDacSan))
 }
 
 func DocDanhSachDacSanDaDanhGia(idNguoiDung string) ([]DacSan, error) {
@@ -103,36 +79,6 @@ func DocDanhGiaDacSanTheoNguoiDung(idDacSan int, idNguoiDung string) (LuotDanhGi
 	return luotDanhGia, nil
 }
 
-func TinhDiemDanhGiaDacSan(idDacSan int) float64 {
-	lichSuDanhGia := []LuotDanhGiaDacSan{}
-	tongDiem := 0.0
-
-	rows, err := db.Query("SELECT * FROM luot_danh_gia_dac_san WHERE id_dac_san = " + strconv.Itoa(idDacSan))
-	if err != nil {
-		return -1
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var luotDanhGia LuotDanhGiaDacSan
-		var temp sql.NullString
-		if err := rows.Scan(&luotDanhGia.IdNguoiDung, &luotDanhGia.IdDacSan, &luotDanhGia.ThoiGianDanhGia, &luotDanhGia.DiemDanhGia, &temp); err != nil {
-			return -1
-		}
-		if temp.Valid {
-			luotDanhGia.NoiDung = temp.String
-		}
-		lichSuDanhGia = append(lichSuDanhGia, luotDanhGia)
-		tongDiem += float64(luotDanhGia.DiemDanhGia)
-	}
-
-	if err := rows.Err(); err != nil {
-		return -1
-	}
-
-	return tongDiem / float64(len(lichSuDanhGia))
-}
-
 func ThemDanhGiaDacSan(luotDanhGia LuotDanhGiaDacSan) error {
 	_, err := DocDanhGiaDacSanTheoNguoiDung(luotDanhGia.IdDacSan, luotDanhGia.IdNguoiDung)
 	if err != nil {
@@ -148,7 +94,7 @@ func CapNhatDanhGiaDacSan(luotDanhGia LuotDanhGiaDacSan) error {
 	return err
 }
 
-func XoaDanhGiaDacSan(idNguoiDung int, idDacSan int) error {
+func XoaDanhGiaDacSan(idNguoiDung string, idDacSan int) error {
 	_, err := db.Exec("DELETE FROM luot_danh_gia_dac_san WHERE id_nguoi_dung = ? AND id_dac_san = ?", idNguoiDung, idDacSan)
 	return err
 }

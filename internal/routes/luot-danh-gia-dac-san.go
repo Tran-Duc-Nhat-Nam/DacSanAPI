@@ -8,14 +8,6 @@ import (
 	"strconv"
 )
 
-func TinhDiemDanhGiaDacSanTheoIdAPI(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.IndentedJSON(http.StatusConflict, 0)
-	}
-	c.IndentedJSON(http.StatusOK, models.TinhDiemDanhGiaDacSan(id))
-}
-
 func DanhGiaDacSanAPI(c *gin.Context) {
 	var danhGia models.LuotDanhGiaDacSan
 
@@ -25,6 +17,39 @@ func DanhGiaDacSanAPI(c *gin.Context) {
 	}
 
 	if err := models.ThemDanhGiaDacSan(danhGia); err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+		return
+	}
+	c.IndentedJSON(http.StatusOK, true)
+}
+
+func CapNhatDanhGiaDacSanAPI(c *gin.Context) {
+	var danhGia models.LuotDanhGiaDacSan
+
+	if err := c.BindJSON(&danhGia); err != nil {
+		fmt.Print(err.Error())
+		return
+	}
+
+	if err := models.CapNhatDanhGiaDacSan(danhGia); err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+		return
+	}
+	c.IndentedJSON(http.StatusOK, true)
+}
+
+func HuyDanhGiaDacSanAPI(c *gin.Context) {
+	idDacSan, err := strconv.Atoi(c.Param("idDacSan"))
+	if err != nil {
+		fmt.Print(err.Error())
+		c.IndentedJSON(http.StatusConflict, err.Error())
+		return
+	}
+	idNguoiDung := c.Param("idNguoiDung")
+
+	if err := models.XoaDanhGiaDacSan(idNguoiDung, idDacSan); err != nil {
 		fmt.Print(err.Error())
 		c.IndentedJSON(http.StatusConflict, err.Error())
 		return
