@@ -16,7 +16,7 @@ type NguoiDung struct {
 	LichSuXemDacSan     []LuotXemDacSan     `json:"lich_su_xem_dac_san"`
 	LichSuXemNoiBan     []LuotXemNoiBan     `json:"lich_su_xem_noi_ban"`
 	LichSuDanhGiaDacSan []LuotDanhGiaDacSan `json:"lich_su_danh_gia_dac_san"`
-	LichSuDanhGiaNoiBan []LuotDanhGiaNoiBan `json:"lich_su_danh_gia_san"`
+	LichSuDanhGiaNoiBan []LuotDanhGiaNoiBan `json:"lich_su_danh_gia_noi_ban"`
 }
 
 func DocNguoiDung(rows *sql.Rows, err error) ([]NguoiDung, error) {
