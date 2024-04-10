@@ -21,3 +21,7 @@ func docTuKhoaTimKiem(c *gin.Context) (string, int, int, error) {
 	}
 	return ten, soTrang, kichThuocTrang, err
 }
+
+func checkAuth() {
+	gin.BasicAuth(gin.Accounts{"admindacsan": "Vinafood2024"})
+}
