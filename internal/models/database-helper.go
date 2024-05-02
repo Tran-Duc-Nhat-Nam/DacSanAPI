@@ -11,10 +11,10 @@ var db *sql.DB
 
 func ConnectDatabase() {
 	cfg := mysql.Config{
-		User:                 "dac-san-api",
+		User:                 "root",
 		Passwd:               "nhatnam2002",
 		Net:                  "tcp",
-		Addr:                 "35.236.191.193:3306",
+		Addr:                 "localhost:3306",
 		DBName:               "dacsandb",
 		ParseTime:            true,
 		AllowNativePasswords: true,

@@ -115,5 +115,5 @@ func main() {
 	router.GET("/lichsu/dacsan/nguoidung=:idNguoiDung/size=:size/index=:index", routes.TimKiemDanhSachDacSanDaXemAPI)
 	router.GET("/lichsu/noiban/nguoidung=:idNguoiDung", routes.DocDanhSachNoiBanDaXemAPI)
 
-	router.Run()
+	router.Run(":8080")
 }
