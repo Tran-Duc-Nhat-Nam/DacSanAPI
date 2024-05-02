@@ -13,11 +13,7 @@
 <h3 align="center">VinaFood API</h3>
 
 <p align="center">
-  <a href="https://github.com/Tran-Duc-Nhat-Nam/AppDacSan/releases">API url</a>
-  |
   <a href="https://github.com/Tran-Duc-Nhat-Nam/AppDacSan/issues">Report Bug</a>
-  |
-  <a href="https://github.com/Tran-Duc-Nhat-Nam/AppDacSan/issues">Request Feature</a>
   <br />
   <p>-------------------------------------------------------------------------------</p>
   <h4 align="center">VinaFood project</h3>
@@ -53,17 +49,9 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Public API connects to a MySQL server storing Vietnam specialties information 
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-### Built With
+An REST API connects to a MySQL server storing Vietnam specialties information built with Go.
 
 [![Go][Go-logo]][Go-url]
-
-[![Google cloud run][Google-cloud-run-logo]][Google-cloud-run-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -71,16 +59,10 @@ Public API connects to a MySQL server storing Vietnam specialties information
 
 <!-- GETTING STARTED -->
 ## Installation
-
-### For user:
-1. Go to [here](https://github.com/Tran-Duc-Nhat-Nam/DacSanAPI/releases)
-   
-2. Follow the document on the home page
-
-### For developer:
-1. Open an IDE or code editor
-
-2. Clone the repo
+1. Download and install MySQL Workbench
+2. Import database from the dump file to your local MySQL server
+3. Open an IDE or code editor
+4. Clone the repo
    
    ```sh
    git clone https://github.com/Tran-Duc-Nhat-Nam/DacSanAPI.git
